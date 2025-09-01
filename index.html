@@ -1,0 +1,2423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heart Team Simulator - Advanced Mitral Valve Decision Making</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            --danger-gradient: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
+            --info-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --dark-gradient: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            --card-hover-shadow: 0 30px 80px rgba(0, 0, 0, 0.25);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0e27;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated Background */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            overflow: hidden;
+        }
+
+        .animated-bg::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
+            animation: rotate 30s linear infinite;
+        }
+
+        .animated-bg::after {
+            content: '';
+            position: absolute;
+            bottom: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(118, 75, 162, 0.1) 0%, transparent 70%);
+            animation: rotate 40s linear infinite reverse;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Particle Effects */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            animation: float 20s infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px);
+                opacity: 0;
+            }
+        }
+
+        /* Welcome Screen */
+        .welcome-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--dark-gradient);
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .welcome-content {
+            max-width: 1200px;
+            padding: 60px;
+            text-align: center;
+            animation: welcomeFadeIn 1s ease;
+        }
+
+        @keyframes welcomeFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .welcome-logo {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 30px;
+            background: var(--primary-gradient);
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            color: white;
+            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.4);
+            animation: pulse 2s ease infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 20px 60px rgba(102, 126, 234, 0.4);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 30px 80px rgba(102, 126, 234, 0.6);
+            }
+        }
+
+        .welcome-title {
+            font-size: 3.5em;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 20px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+        }
+
+        .welcome-subtitle {
+            font-size: 1.3em;
+            color: #8892b0;
+            margin-bottom: 50px;
+            font-weight: 300;
+        }
+
+        .feature-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .feature-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 20px;
+            background: var(--primary-gradient);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8em;
+        }
+
+        .feature-title {
+            color: white;
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .feature-description {
+            color: #8892b0;
+            line-height: 1.6;
+        }
+
+        .start-button {
+            padding: 20px 60px;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: 60px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .start-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 50px rgba(102, 126, 234, 0.5);
+        }
+
+        /* Main Application */
+        .main-app {
+            display: none;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Header */
+        .app-header {
+            background: rgba(26, 31, 58, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px 40px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .logo-badge {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: var(--primary-gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.3em;
+        }
+
+        .logo-text {
+            color: white;
+            font-size: 1.3em;
+            font-weight: 600;
+        }
+
+        .mode-badge {
+            padding: 8px 20px;
+            background: rgba(102, 126, 234, 0.2);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 20px;
+            color: #667eea;
+            font-weight: 500;
+            font-size: 0.9em;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .timer-display {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: white;
+            font-family: 'Monaco', monospace;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .timer-icon {
+            color: #667eea;
+        }
+
+        .case-progress {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+        }
+
+        .progress-label {
+            color: #8892b0;
+            font-size: 0.9em;
+        }
+
+        .progress-value {
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Main Layout */
+        .app-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 30px;
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 30px;
+        }
+
+        /* Patient Information Panel */
+        .patient-panel {
+            background: rgba(26, 31, 58, 0.95);
+            border-radius: 24px;
+            padding: 30px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            height: fit-content;
+            position: sticky;
+            top: 110px;
+            max-height: calc(100vh - 140px);
+            overflow-y: auto;
+        }
+
+        .patient-header {
+            margin-bottom: 30px;
+        }
+
+        .patient-photo {
+            width: 80px;
+            height: 80px;
+            background: var(--primary-gradient);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .patient-name {
+            color: white;
+            font-size: 1.5em;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .patient-meta {
+            display: flex;
+            gap: 15px;
+            color: #8892b0;
+            font-size: 0.95em;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Data Sections */
+        .data-section {
+            margin-bottom: 25px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .section-title {
+            color: white;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-icon {
+            width: 28px;
+            height: 28px;
+            background: rgba(102, 126, 234, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #667eea;
+        }
+
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .data-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .data-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+
+        .data-label {
+            color: #8892b0;
+            font-size: 0.85em;
+            margin-bottom: 5px;
+        }
+
+        .data-value {
+            color: white;
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .data-value.normal {
+            color: #11998e;
+        }
+
+        .data-value.warning {
+            color: #ffa726;
+        }
+
+        .data-value.critical {
+            color: #ef5350;
+        }
+
+        .data-unit {
+            color: #8892b0;
+            font-size: 0.8em;
+            font-weight: 400;
+            margin-left: 3px;
+        }
+
+        /* Status Badges */
+        .status-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 500;
+            border: 1px solid;
+        }
+
+        .status-badge.active {
+            background: rgba(239, 83, 80, 0.2);
+            border-color: rgba(239, 83, 80, 0.3);
+            color: #ef5350;
+        }
+
+        .status-badge.inactive {
+            background: rgba(17, 153, 142, 0.2);
+            border-color: rgba(17, 153, 142, 0.3);
+            color: #11998e;
+        }
+
+        /* Conference Room */
+        .conference-room {
+            background: rgba(26, 31, 58, 0.95);
+            border-radius: 24px;
+            padding: 40px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .room-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .room-title {
+            color: white;
+            font-size: 1.8em;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .room-subtitle {
+            color: #8892b0;
+        }
+
+        /* Team Circle */
+        .team-circle {
+            position: relative;
+            width: 100%;
+            height: 450px;
+            margin-bottom: 40px;
+        }
+
+        .circle-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            background: rgba(102, 126, 234, 0.1);
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .center-label {
+            color: #8892b0;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .center-value {
+            color: white;
+            font-size: 2em;
+            font-weight: 700;
+        }
+
+        .center-status {
+            color: #667eea;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+
+        /* Team Members */
+        .team-member {
+            position: absolute;
+            width: 140px;
+            height: 180px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .member-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: visible;
+        }
+
+        .member-avatar.speaking {
+            animation: speakingPulse 2s ease infinite;
+            border-color: #667eea;
+            box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.4);
+        }
+
+        @keyframes speakingPulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 0 20px rgba(102, 126, 234, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(102, 126, 234, 0);
+            }
+        }
+
+        .member-avatar.agrees {
+            border-color: #11998e;
+            background: rgba(17, 153, 142, 0.1);
+        }
+
+        .member-avatar.disagrees {
+            border-color: #ef5350;
+            background: rgba(239, 83, 80, 0.1);
+        }
+
+        .member-avatar.thinking {
+            border-color: #ffa726;
+            background: rgba(255, 167, 38, 0.1);
+        }
+
+        .member-emoji {
+            font-size: 2.5em;
+            margin-bottom: 5px;
+        }
+
+        .member-role {
+            font-size: 0.75em;
+            color: #8892b0;
+            text-align: center;
+            padding: 4px 8px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+
+        .member-name {
+            color: white;
+            font-size: 0.9em;
+            font-weight: 500;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .member-status {
+            font-size: 0.8em;
+            color: #8892b0;
+            text-align: center;
+        }
+
+        .opinion-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 0.9em;
+            border: 2px solid rgba(26, 31, 58, 1);
+        }
+
+        .opinion-surgery {
+            background: var(--danger-gradient);
+        }
+
+        .opinion-transcatheter {
+            background: var(--info-gradient);
+        }
+
+        .opinion-medical {
+            background: linear-gradient(135deg, #ffa726 0%, #ff6f00 100%);
+        }
+
+        .opinion-undecided {
+            background: linear-gradient(135deg, #757575 0%, #424242 100%);
+        }
+
+        /* Discussion Area */
+        .discussion-area {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 30px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .discussion-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .discussion-title {
+            color: white;
+            font-size: 1.2em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            background: rgba(239, 83, 80, 0.2);
+            border-radius: 20px;
+            color: #ef5350;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: #ef5350;
+            border-radius: 50%;
+            animation: livePulse 2s ease infinite;
+        }
+
+        @keyframes livePulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        /* Messages */
+        .message {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            opacity: 0;
+            animation: messageSlide 0.5s ease forwards;
+        }
+
+        @keyframes messageSlide {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .message-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            flex-shrink: 0;
+        }
+
+        .message-avatar.surgeon {
+            background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
+        }
+
+        .message-avatar.interventional {
+            background: var(--info-gradient);
+        }
+
+        .message-avatar.imaging {
+            background: var(--success-gradient);
+        }
+
+        .message-avatar.anesthesia {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        }
+
+        .message-content {
+            flex: 1;
+        }
+
+        .message-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .message-sender {
+            color: white;
+            font-weight: 600;
+        }
+
+        .message-role {
+            color: #8892b0;
+            font-size: 0.85em;
+        }
+
+        .message-time {
+            color: #8892b0;
+            font-size: 0.8em;
+            margin-left: auto;
+        }
+
+        .message-text {
+            color: #ccd6f6;
+            line-height: 1.6;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 15px;
+            border-radius: 12px;
+            border-left: 3px solid;
+        }
+
+        .message-text.support {
+            border-left-color: #11998e;
+        }
+
+        .message-text.challenge {
+            border-left-color: #ef5350;
+        }
+
+        .message-text.neutral {
+            border-left-color: #667eea;
+        }
+
+        .message-highlight {
+            background: rgba(102, 126, 234, 0.2);
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+        }
+
+        .highlight-label {
+            color: #667eea;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .highlight-text {
+            color: white;
+            font-weight: 500;
+        }
+
+        /* Interactive Controls */
+        .interaction-panel {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .your-turn {
+            background: var(--success-gradient);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            animation: turnGlow 2s ease infinite;
+        }
+
+        @keyframes turnGlow {
+            0%, 100% {
+                box-shadow: 0 5px 20px rgba(17, 153, 142, 0.3);
+            }
+            50% {
+                box-shadow: 0 5px 30px rgba(17, 153, 142, 0.5);
+            }
+        }
+
+        .response-options {
+            display: grid;
+            gap: 15px;
+        }
+
+        .response-option {
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .response-option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .response-option:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+
+        .response-option:hover::before {
+            left: 100%;
+        }
+
+        .response-option.selected {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: #667eea;
+        }
+
+        .response-type {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: 600;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .type-support {
+            background: rgba(17, 153, 142, 0.2);
+            color: #11998e;
+        }
+
+        .type-challenge {
+            background: rgba(239, 83, 80, 0.2);
+            color: #ef5350;
+        }
+
+        .type-question {
+            background: rgba(102, 126, 234, 0.2);
+            color: #667eea;
+        }
+
+        .type-data {
+            background: rgba(255, 167, 38, 0.2);
+            color: #ffa726;
+        }
+
+        .response-text {
+            color: #ccd6f6;
+            line-height: 1.6;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Consensus Meter */
+        .consensus-panel {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .consensus-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .consensus-title {
+            color: white;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .consensus-value {
+            color: #667eea;
+            font-size: 1.5em;
+            font-weight: 700;
+        }
+
+        .consensus-bar {
+            height: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .consensus-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ef5350 0%, #ffa726 40%, #66bb6a 80%, #11998e 100%);
+            border-radius: 20px;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .consensus-markers {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            padding: 0 10px;
+        }
+
+        .consensus-marker {
+            color: #8892b0;
+            font-size: 0.85em;
+        }
+
+        /* Vote Distribution */
+        .vote-distribution {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .vote-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .vote-icon {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto 10px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+        }
+
+        .vote-icon.surgery {
+            background: rgba(239, 83, 80, 0.2);
+            color: #ef5350;
+        }
+
+        .vote-icon.transcatheter {
+            background: rgba(79, 172, 254, 0.2);
+            color: #4facfe;
+        }
+
+        .vote-icon.medical {
+            background: rgba(255, 167, 38, 0.2);
+            color: #ffa726;
+        }
+
+        .vote-count {
+            color: white;
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .vote-label {
+            color: #8892b0;
+            font-size: 0.85em;
+        }
+
+        /* Decision Summary Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 14, 39, 0.95);
+            z-index: 2000;
+            backdrop-filter: blur(10px);
+            animation: modalFade 0.3s ease;
+        }
+
+        @keyframes modalFade {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #1a1f3a 0%, #0a0e27 100%);
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 30px 100px rgba(0, 0, 0, 0.5);
+            animation: modalSlide 0.4s ease;
+        }
+
+        @keyframes modalSlide {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -45%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .modal-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: var(--success-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5em;
+            color: white;
+            box-shadow: 0 10px 40px rgba(17, 153, 142, 0.3);
+        }
+
+        .modal-title {
+            color: white;
+            font-size: 2em;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .modal-subtitle {
+            color: #8892b0;
+            font-size: 1.1em;
+        }
+
+        .score-display {
+            font-size: 4em;
+            font-weight: 800;
+            background: var(--success-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 20px 0;
+        }
+
+        .feedback-section {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .feedback-title {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feedback-content {
+            color: #ccd6f6;
+            line-height: 1.8;
+        }
+
+        .learning-points {
+            list-style: none;
+            padding: 0;
+        }
+
+        .learning-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 15px;
+            padding: 12px;
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 10px;
+            border-left: 3px solid #667eea;
+        }
+
+        .point-icon {
+            width: 24px;
+            height: 24px;
+            background: var(--success-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            flex-shrink: 0;
+            font-size: 0.8em;
+        }
+
+        .point-text {
+            color: #ccd6f6;
+            line-height: 1.6;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.05em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .modal-btn.primary {
+            background: var(--primary-gradient);
+            color: white;
+        }
+
+        .modal-btn.secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Loading States */
+        .thinking-dots {
+            display: inline-flex;
+            gap: 4px;
+            margin-left: 10px;
+        }
+
+        .thinking-dot {
+            width: 8px;
+            height: 8px;
+            background: #667eea;
+            border-radius: 50%;
+            animation: thinking 1.4s ease infinite;
+        }
+
+        .thinking-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .thinking-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes thinking {
+            0%, 60%, 100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            30% {
+                transform: translateY(-10px);
+                opacity: 0.6;
+            }
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(102, 126, 234, 0.3);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(102, 126, 234, 0.5);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1400px) {
+            .app-container {
+                grid-template-columns: 350px 1fr;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .patient-panel {
+                position: relative;
+                top: 0;
+                max-height: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .welcome-title {
+                font-size: 2.5em;
+            }
+            
+            .feature-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .vote-distribution {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="animated-bg"></div>
+    <div class="particles" id="particles"></div>
+
+    <!-- Welcome Screen -->
+    <div class="welcome-screen" id="welcomeScreen">
+        <div class="welcome-content">
+            <div class="welcome-logo">❤️</div>
+            <h1 class="welcome-title">Heart Team Simulator</h1>
+            <p class="welcome-subtitle">Master Mitral Valve Decision-Making Through Immersive Team Discussions</p>
+            
+            <div class="feature-cards">
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <div class="feature-title">Realistic Scenarios</div>
+                    <div class="feature-description">Experience authentic heart team dynamics with complex clinical cases</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💬</div>
+                    <div class="feature-title">Interactive Discussions</div>
+                    <div class="feature-description">Participate in real-time debates and witness professional disagreements</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🧠</div>
+                    <div class="feature-title">Evidence-Based Learning</div>
+                    <div class="feature-description">Learn from detailed explanations backed by current guidelines</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <div class="feature-title">Comprehensive Data</div>
+                    <div class="feature-description">Analyze complete patient information including echo, labs, and risk scores</div>
+                </div>
+            </div>
+            
+            <button class="start-button" onclick="startApplication()">Start Simulation</button>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div class="main-app" id="mainApp">
+        <!-- Header -->
+        <div class="app-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="logo-badge">
+                        <div class="logo-icon">HT</div>
+                        <div class="logo-text">Heart Team Conference</div>
+                    </div>
+                    <div class="mode-badge" id="modeBadge">Guided Learning</div>
+                </div>
+                <div class="header-right">
+                    <div class="timer-display">
+                        <span class="timer-icon">⏱️</span>
+                        <span id="timerValue">00:00</span>
+                    </div>
+                    <div class="case-progress">
+                        <span class="progress-label">Case</span>
+                        <span class="progress-value" id="caseNumber">1 of 10</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Container -->
+        <div class="app-container">
+            <!-- Patient Information Panel -->
+            <div class="patient-panel">
+                <div class="patient-header">
+                    <div class="patient-photo" id="patientPhoto">RJ</div>
+                    <div class="patient-name" id="patientName">Robert Johnson</div>
+                    <div class="patient-meta">
+                        <div class="meta-item">
+                            <span>👤</span>
+                            <span id="patientAge">68 years</span>
+                        </div>
+                        <div class="meta-item">
+                            <span>♂️</span>
+                            <span id="patientGender">Male</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="data-section">
+                    <div class="section-header">
+                        <div class="section-title">
+                            <div class="section-icon">❤️</div>
+                            <span>Hemodynamics</span>
+                        </div>
+                    </div>
+                    <div class="data-grid">
+                        <div class="data-item">
+                            <div class="data-label">Ejection Fraction</div>
+                            <div class="data-value normal" id="dataEF">62<span class="data-unit">%</span></div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">LVEDV</div>
+                            <div class="data-value warning" id="dataLVEDV">185<span class="data-unit">ml</span></div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">LVESV</div>
+                            <div class="data-value normal" id="dataLVESV">70<span class="data-unit">ml</span></div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">LA Volume</div>
+                            <div class="data-value warning" id="dataLA">95<span class="data-unit">ml</span></div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">PAP</div>
+                            <div class="data-value normal" id="dataPAP">38<span class="data-unit">mmHg</span></div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">Cardiac Index</div>
+                            <div class="data-value normal" id="dataCI">3.2<span class="data-unit">L/min/m²</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="data-section">
+                    <div class="section-header">
+                        <div class="section-title">
+                            <div class="section-icon">🫀</div>
+                            <span>Valve Assessment</span>
+                        </div>
+                    </div>
+                    <div class="data-grid">
+                        <div class="data-item">
+                            <div class="data-label">MR Severity</div>
+                            <div class="data-value critical" id="dataMR">Severe</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">Mechanism</div>
+                            <div class="data-value" id="dataMechanism">P2 Prolapse</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">ERO Area</div>
+                            <div class="data-value critical" id="dataERO">0.45<span class="data-unit">cm²</span></div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">Reg Volume</div>
+                            <div class="data-value critical" id="dataRegVol">65<span class="data-unit">ml</span></div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">TR Severity</div>
+                            <div class="data-value normal" id="dataTR">Mild</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">Annulus Size</div>
+                            <div class="data-value" id="dataAnnulus">38<span class="data-unit">mm</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="data-section">
+                    <div class="section-header">
+                        <div class="section-title">
+                            <div class="section-icon">📊</div>
+                            <span>Risk Assessment</span>
+                        </div>
+                    </div>
+                    <div class="data-grid">
+                        <div class="data-item">
+                            <div class="data-label">STS Score</div>
+                            <div class="data-value normal" id="dataSTS">1.8<span class="data-unit">%</span></div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">EuroSCORE II</div>
+                            <div class="data-value normal" id="dataEuro">2.1<span class="data-unit">%</span></div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">Creatinine</div>
+                            <div class="data-value normal" id="dataCreat">1.1<span class="data-unit">mg/dl</span></div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">Hemoglobin</div>
+                            <div class="data-value normal" id="dataHgb">13.5<span class="data-unit">g/dl</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="data-section">
+                    <div class="section-header">
+                        <div class="section-title">
+                            <div class="section-icon">🏥</div>
+                            <span>Clinical Status</span>
+                        </div>
+                    </div>
+                    <div class="status-badges" id="statusBadges">
+                        <div class="status-badge active">NYHA II</div>
+                        <div class="status-badge active">Diabetes</div>
+                        <div class="status-badge inactive">No CAD</div>
+                        <div class="status-badge inactive">No AFib</div>
+                        <div class="status-badge inactive">No COPD</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conference Room -->
+            <div class="conference-room">
+                <div class="room-header">
+                    <h2 class="room-title">Multidisciplinary Heart Team Conference</h2>
+                    <p class="room-subtitle">Real-time collaborative decision making for optimal patient care</p>
+                </div>
+
+                <!-- Team Circle Visualization -->
+                <div class="team-circle" id="teamCircle">
+                    <div class="circle-center">
+                        <div class="center-label">Consensus Level</div>
+                        <div class="center-value" id="consensusPercent">0%</div>
+                        <div class="center-status">Building...</div>
+                    </div>
+                    <!-- Team members will be dynamically added here -->
+                </div>
+
+                <!-- Discussion Area -->
+                <div class="discussion-area">
+                    <div class="discussion-header">
+                        <div class="discussion-title">
+                            <span>💬</span>
+                            <span>Team Discussion</span>
+                        </div>
+                        <div class="live-indicator">
+                            <div class="live-dot"></div>
+                            <span>LIVE</span>
+                        </div>
+                    </div>
+                    <div id="discussionMessages">
+                        <!-- Messages will be dynamically added here -->
+                    </div>
+                </div>
+
+                <!-- Interaction Panel (for Practice Mode) -->
+                <div class="interaction-panel" id="interactionPanel" style="display: none;">
+                    <div class="your-turn" id="yourTurn" style="display: none;">
+                        🎯 It's Your Turn to Contribute
+                    </div>
+                    <div class="response-options" id="responseOptions">
+                        <!-- Options will be dynamically added -->
+                    </div>
+                    <button class="submit-btn" id="submitBtn" onclick="submitResponse()" disabled>
+                        Submit Response
+                    </button>
+                </div>
+
+                <!-- Consensus Panel -->
+                <div class="consensus-panel">
+                    <div class="consensus-header">
+                        <div class="consensus-title">
+                            <span>🤝</span>
+                            <span>Team Consensus Progress</span>
+                        </div>
+                        <div class="consensus-value" id="consensusValue">0%</div>
+                    </div>
+                    <div class="consensus-bar">
+                        <div class="consensus-fill" id="consensusFill" style="width: 0%;">
+                            Building Consensus...
+                        </div>
+                    </div>
+                    <div class="consensus-markers">
+                        <span class="consensus-marker">Disagreement</span>
+                        <span class="consensus-marker">Discussion</span>
+                        <span class="consensus-marker">Alignment</span>
+                        <span class="consensus-marker">Consensus</span>
+                    </div>
+                    
+                    <div class="vote-distribution">
+                        <div class="vote-card">
+                            <div class="vote-icon surgery">🔪</div>
+                            <div class="vote-count" id="voteSurgery">0</div>
+                            <div class="vote-label">Surgery</div>
+                        </div>
+                        <div class="vote-card">
+                            <div class="vote-icon transcatheter">🩺</div>
+                            <div class="vote-count" id="voteTranscatheter">0</div>
+                            <div class="vote-label">Transcatheter</div>
+                        </div>
+                        <div class="vote-card">
+                            <div class="vote-icon medical">💊</div>
+                            <div class="vote-count" id="voteMedical">0</div>
+                            <div class="vote-label">Medical</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Modal -->
+    <div class="modal" id="feedbackModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-icon">✅</div>
+                <h2 class="modal-title">Case Complete!</h2>
+                <p class="modal-subtitle">Let's review the team's decision and key learning points</p>
+                <div class="score-display" id="scoreDisplay">92%</div>
+            </div>
+
+            <div class="feedback-section">
+                <div class="feedback-title">
+                    <span>🎯</span>
+                    <span>Final Team Decision</span>
+                </div>
+                <div class="feedback-content" id="finalDecision">
+                    Minimally invasive mitral valve repair with P2 resection and annuloplasty ring placement
+                </div>
+            </div>
+
+            <div class="feedback-section">
+                <div class="feedback-title">
+                    <span>📋</span>
+                    <span>Clinical Rationale</span>
+                </div>
+                <div class="feedback-content" id="clinicalRationale">
+                    The patient presents with severe symptomatic mitral regurgitation due to isolated P2 prolapse. Given the favorable anatomy, preserved left ventricular function, and low surgical risk (STS 1.8%), minimally invasive repair offers the best long-term outcomes with >95% expected repair success rate.
+                </div>
+            </div>
+
+            <div class="feedback-section">
+                <div class="feedback-title">
+                    <span>💡</span>
+                    <span>Key Learning Points</span>
+                </div>
+                <ul class="learning-points" id="learningPoints">
+                    <li class="learning-point">
+                        <div class="point-icon">✓</div>
+                        <div class="point-text">Isolated P2 prolapse has the highest repair success rates (>95%) in experienced centers</div>
+                    </li>
+                    <li class="learning-point">
+                        <div class="point-icon">✓</div>
+                        <div class="point-text">Early intervention preserves LV function and prevents adverse remodeling</div>
+                    </li>
+                    <li class="learning-point">
+                        <div class="point-icon">✓</div>
+                        <div class="point-text">Minimally invasive approaches reduce morbidity while maintaining repair quality</div>
+                    </li>
+                    <li class="learning-point">
+                        <div class="point-icon">✓</div>
+                        <div class="point-text">Multidisciplinary consensus improves patient outcomes</div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="modal-actions">
+                <button class="modal-btn secondary" onclick="reviewCase()">Review Discussion</button>
+                <button class="modal-btn primary" onclick="nextCase()">Next Case</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Comprehensive Clinical Cases Database
+        const casesDatabase = [
+            {
+                id: 1,
+                patient: {
+                    name: "Robert Johnson",
+                    age: 68,
+                    gender: "Male",
+                    photo: "RJ",
+                    presenting: "Progressive dyspnea on exertion over 6 months, now NYHA Class II"
+                },
+                clinicalData: {
+                    hemodynamics: {
+                        ef: 62,
+                        lvedv: 185,
+                        lvesv: 70,
+                        la_volume: 95,
+                        pap: 38,
+                        ci: 3.2
+                    },
+                    valve: {
+                        mr_severity: "Severe",
+                        mechanism: "P2 Prolapse",
+                        ero: 0.45,
+                        reg_volume: 65,
+                        tr_severity: "Mild",
+                        annulus: 38
+                    },
+                    risk: {
+                        sts: 1.8,
+                        euroscore: 2.1,
+                        creatinine: 1.1,
+                        hemoglobin: 13.5
+                    },
+                    status: {
+                        nyha: "II",
+                        diabetes: true,
+                        cad: false,
+                        afib: false,
+                        copd: false
+                    }
+                },
+                teamMembers: [
+                    {
+                        id: "surgeon",
+                        name: "Dr. Michael Chen",
+                        role: "Cardiac Surgeon",
+                        emoji: "👨‍⚕️",
+                        position: { angle: 0 },
+                        opinion: "surgery",
+                        personality: "confident"
+                    },
+                    {
+                        id: "interventional",
+                        name: "Dr. Sarah Williams", 
+                        role: "Interventional",
+                        emoji: "👩‍⚕️",
+                        position: { angle: 60 },
+                        opinion: "undecided",
+                        personality: "analytical"
+                    },
+                    {
+                        id: "imaging",
+                        name: "Dr. James Park",
+                        role: "Imaging Specialist",
+                        emoji: "👨‍⚕️",
+                        position: { angle: 120 },
+                        opinion: "surgery",
+                        personality: "detail-oriented"
+                    },
+                    {
+                        id: "anesthesia",
+                        name: "Dr. Linda Brown",
+                        role: "Anesthesiologist",
+                        emoji: "👩‍⚕️",
+                        position: { angle: 180 },
+                        opinion: "surgery",
+                        personality: "cautious"
+                    },
+                    {
+                        id: "heartfailure",
+                        name: "Dr. Robert Martinez",
+                        role: "HF Specialist",
+                        emoji: "👨‍⚕️",
+                        position: { angle: 240 },
+                        opinion: "surgery",
+                        personality: "evidence-based"
+                    },
+                    {
+                        id: "coordinator",
+                        name: "Patricia Anderson",
+                        role: "Nurse Coordinator",
+                        emoji: "👩‍⚕️",
+                        position: { angle: 300 },
+                        opinion: "undecided",
+                        personality: "patient-focused"
+                    }
+                ],
+                discussion: [
+                    {
+                        speaker: "surgeon",
+                        message: "Good morning everyone. We're discussing Mr. Johnson, a 68-year-old with severe symptomatic MR. Looking at the echo findings, this appears to be an excellent surgical candidate with isolated P2 prolapse.",
+                        type: "neutral",
+                        delay: 2000
+                    },
+                    {
+                        speaker: "imaging",
+                        message: "I agree. The 3D TEE shows isolated P2 prolapse with a 7mm flail gap. The leaflet tissue quality is excellent with no calcification. The annulus is moderately dilated at 38mm but should be addressable with an annuloplasty ring.",
+                        type: "support",
+                        delay: 3000
+                    },
+                    {
+                        speaker: "anesthesia",
+                        message: "From a perioperative risk standpoint, the STS score of 1.8% puts him in the low-risk category. His diabetes is well-controlled with an A1c of 6.8%. No pulmonary or renal issues. He should tolerate surgery well.",
+                        type: "support",
+                        delay: 3500
+                    },
+                    {
+                        speaker: "interventional",
+                        message: "While I agree surgery seems appropriate, should we discuss transcatheter options? The anatomy appears suitable for MitraClip, and some patients prefer to avoid sternotomy. What are the patient's preferences?",
+                        type: "challenge",
+                        delay: 3000
+                    },
+                    {
+                        speaker: "coordinator",
+                        message: "The patient did express initial concerns about open surgery. However, after discussing the minimally invasive approach with a small right thoracotomy, he seemed more receptive. His main goal is to return to his active lifestyle - he plays golf three times a week.",
+                        type: "neutral",
+                        delay: 3500
+                    },
+                    {
+                        speaker: "surgeon",
+                        message: "That's an important point about lifestyle. With this anatomy, I can achieve a >95% repair rate through a mini-thoracotomy. The durability data shows 90% freedom from reoperation at 15 years. MitraClip has higher residual MR rates and less durability data.",
+                        type: "support",
+                        delay: 4000
+                    },
+                    {
+                        speaker: "heartfailure",
+                        message: "The LV is already showing early remodeling with an LVEDV of 185ml. We need definitive treatment before further deterioration. The guidelines give a Class I recommendation for surgery when repair likelihood is >95% and surgical risk is low.",
+                        type: "support",
+                        delay: 3500
+                    },
+                    {
+                        speaker: "interventional",
+                        message: "Those are compelling arguments. Given the excellent anatomy, low surgical risk, and need for durable repair in this relatively young patient, I agree surgery is the best option. MitraClip should be reserved for higher-risk patients.",
+                        type: "support",
+                        delay: 3000
+                    },
+                    {
+                        speaker: "imaging",
+                        message: "I should add that the exercise echo showed his PAP rising to 58mmHg, suggesting hemodynamic consequences despite being relatively asymptomatic. This supports early intervention.",
+                        type: "support",
+                        delay: 2500
+                    },
+                    {
+                        speaker: "surgeon",
+                        message: "Excellent point. So we have consensus for minimally invasive mitral repair? I'll plan for P2 resection with a 32mm annuloplasty ring. Expected pump time around 90 minutes.",
+                        type: "neutral",
+                        delay: 3000
+                    },
+                    {
+                        speaker: "anesthesia",
+                        message: "Agreed. I'll prepare for single-lung ventilation and TEE guidance. We'll use our enhanced recovery protocol for early extubation. Any concerns about postop AFib prophylaxis?",
+                        type: "neutral",
+                        delay: 2500
+                    },
+                    {
+                        speaker: "heartfailure",
+                        message: "Good question. Given his normal LA size and no AFib history, standard beta-blockade should suffice. I'll manage his heart failure meds perioperatively.",
+                        type: "support",
+                        delay: 2000
+                    }
+                ],
+                consensusProgress: [20, 35, 50, 45, 60, 75, 85, 92, 95, 98, 98, 100],
+                finalDecision: "Minimally invasive mitral valve repair with P2 resection and annuloplasty",
+                rationale: "For this patient with isolated P2 prolapse, preserved LV function, and low surgical risk (STS 1.8%), minimally invasive mitral repair offers the best long-term outcome with >95% repair success rate and excellent durability.",
+                learningPoints: [
+                    "Isolated P2 prolapse has the highest repair success rates (>95%) in experienced centers",
+                    "Early intervention preserves LV function and prevents adverse remodeling", 
+                    "Exercise echocardiography can unmask hemodynamic consequences in 'asymptomatic' patients",
+                    "Minimally invasive approaches reduce morbidity while maintaining repair quality",
+                    "Patient lifestyle goals should be considered in treatment planning",
+                    "Multidisciplinary consensus improves patient outcomes and satisfaction"
+                ]
+            }
+        ];
+
+        // Global State
+        let currentCase = null;
+        let currentMode = 'guided';
+        let currentRole = null;
+        let discussionIndex = 0;
+        let discussionTimer = null;
+        let secondsElapsed = 0;
+        let timerInterval = null;
+        let consensusLevel = 0;
+        let selectedResponse = null;
+
+        // Start Application
+        function startApplication() {
+            document.getElementById('welcomeScreen').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('welcomeScreen').style.display = 'none';
+                document.getElementById('mainApp').style.display = 'block';
+                createParticles();
+                showRoleSelection();
+            }, 800);
+        }
+
+        // Role Selection Modal
+        function showRoleSelection() {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.display = 'block';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div class="modal-icon">👥</div>
+                        <h2 class="modal-title">Choose Your Role</h2>
+                        <p class="modal-subtitle">Select your specialty and learning mode</p>
+                    </div>
+                    
+                    <div class="feedback-section">
+                        <div class="feedback-title">
+                            <span>🎭</span>
+                            <span>Select Your Specialty</span>
+                        </div>
+                        <div class="response-options">
+                            <div class="response-option" onclick="setRole('surgeon')">
+                                <div class="response-type type-support">Surgeon</div>
+                                <div class="response-text">Lead surgical discussions and advocate for operative interventions</div>
+                            </div>
+                            <div class="response-option" onclick="setRole('interventional')">
+                                <div class="response-type type-question">Interventional</div>
+                                <div class="response-text">Champion transcatheter therapies and minimally invasive approaches</div>
+                            </div>
+                            <div class="response-option" onclick="setRole('imaging')">
+                                <div class="response-type type-data">Imaging</div>
+                                <div class="response-text">Provide detailed anatomical assessments and guide procedural planning</div>
+                            </div>
+                            <div class="response-option" onclick="setRole('anesthesia')">
+                                <div class="response-type type-challenge">Anesthesia</div>
+                                <div class="response-text">Assess perioperative risks and optimize patient safety</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="feedback-section">
+                        <div class="feedback-title">
+                            <span>🎮</span>
+                            <span>Select Learning Mode</span>
+                        </div>
+                        <div class="modal-actions">
+                            <button class="modal-btn secondary" onclick="startSimulation('guided')">
+                                Guided Learning
+                            </button>
+                            <button class="modal-btn primary" onclick="startSimulation('practice')">
+                                Practice Mode
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function setRole(role) {
+            currentRole = role;
+            document.querySelectorAll('.response-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            event.target.closest('.response-option').classList.add('selected');
+        }
+
+        function startSimulation(mode) {
+            currentMode = mode;
+            if (!currentRole && mode === 'practice') {
+                alert('Please select a role for practice mode');
+                return;
+            }
+            
+            document.querySelector('.modal').remove();
+            document.getElementById('modeBadge').textContent = mode === 'guided' ? 'Guided Learning' : 'Practice Mode';
+            
+            if (mode === 'practice') {
+                document.getElementById('interactionPanel').style.display = 'block';
+            }
+            
+            loadCase(0);
+        }
+
+        // Load Case
+        function loadCase(caseIndex) {
+            currentCase = casesDatabase[caseIndex];
+            discussionIndex = 0;
+            consensusLevel = 0;
+            secondsElapsed = 0;
+            
+            // Update patient information
+            updatePatientPanel();
+            
+            // Setup team circle
+            setupTeamCircle();
+            
+            // Start timer
+            startTimer();
+            
+            // Begin discussion
+            startDiscussion();
+        }
+
+        // Update Patient Panel
+        function updatePatientPanel() {
+            const patient = currentCase.patient;
+            const data = currentCase.clinicalData;
+            
+            document.getElementById('patientPhoto').textContent = patient.photo;
+            document.getElementById('patientName').textContent = patient.name;
+            document.getElementById('patientAge').textContent = patient.age + ' years';
+            document.getElementById('patientGender').textContent = patient.gender;
+            
+            // Hemodynamics
+            document.getElementById('dataEF').innerHTML = data.hemodynamics.ef + '<span class="data-unit">%</span>';
+            document.getElementById('dataLVEDV').innerHTML = data.hemodynamics.lvedv + '<span class="data-unit">ml</span>';
+            document.getElementById('dataLVESV').innerHTML = data.hemodynamics.lvesv + '<span class="data-unit">ml</span>';
+            document.getElementById('dataLA').innerHTML = data.hemodynamics.la_volume + '<span class="data-unit">ml</span>';
+            document.getElementById('dataPAP').innerHTML = data.hemodynamics.pap + '<span class="data-unit">mmHg</span>';
+            document.getElementById('dataCI').innerHTML = data.hemodynamics.ci + '<span class="data-unit">L/min/m²</span>';
+            
+            // Valve Assessment  
+            document.getElementById('dataMR').textContent = data.valve.mr_severity;
+            document.getElementById('dataMechanism').textContent = data.valve.mechanism;
+            document.getElementById('dataERO').innerHTML = data.valve.ero + '<span class="data-unit">cm²</span>';
+            document.getElementById('dataRegVol').innerHTML = data.valve.reg_volume + '<span class="data-unit">ml</span>';
+            document.getElementById('dataTR').textContent = data.valve.tr_severity;
+            document.getElementById('dataAnnulus').innerHTML = data.valve.annulus + '<span class="data-unit">mm</span>';
+            
+            // Risk Assessment
+            document.getElementById('dataSTS').innerHTML = data.risk.sts + '<span class="data-unit">%</span>';
+            document.getElementById('dataEuro').innerHTML = data.risk.euroscore + '<span class="data-unit">%</span>';
+            document.getElementById('dataCreat').innerHTML = data.risk.creatinine + '<span class="data-unit">mg/dl</span>';
+            document.getElementById('dataHgb').innerHTML = data.risk.hemoglobin + '<span class="data-unit">g/dl</span>';
+            
+            // Clinical Status
+            const badges = [];
+            badges.push(`<div class="status-badge active">NYHA ${data.status.nyha}</div>`);
+            if (data.status.diabetes) badges.push('<div class="status-badge active">Diabetes</div>');
+            if (!data.status.cad) badges.push('<div class="status-badge inactive">No CAD</div>');
+            if (!data.status.afib) badges.push('<div class="status-badge inactive">No AFib</div>');
+            if (!data.status.copd) badges.push('<div class="status-badge inactive">No COPD</div>');
+            document.getElementById('statusBadges').innerHTML = badges.join('');
+        }
+
+        // Setup Team Circle
+        function setupTeamCircle() {
+            const circle = document.getElementById('teamCircle');
+            const centerX = circle.offsetWidth / 2;
+            const centerY = 225;
+            const radius = 180;
+            
+            // Clear existing members
+            circle.querySelectorAll('.team-member').forEach(m => m.remove());
+            
+            currentCase.teamMembers.forEach((member, index) => {
+                const angle = member.position.angle * Math.PI / 180 - Math.PI / 2;
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+                
+                const memberDiv = document.createElement('div');
+                memberDiv.className = 'team-member';
+                memberDiv.id = `member-${member.id}`;
+                memberDiv.style.left = (x - 70) + 'px';
+                memberDiv.style.top = (y - 90) + 'px';
+                
+                const opinionClass = `opinion-${member.opinion}`;
+                const opinionSymbol = member.opinion === 'surgery' ? 'S' : 
+                                     member.opinion === 'transcatheter' ? 'T' :
+                                     member.opinion === 'medical' ? 'M' : '?';
+                
+                memberDiv.innerHTML = `
+                    <div class="member-avatar ${member.id === currentRole ? 'selected' : ''}" id="avatar-${member.id}">
+                        <div class="member-emoji">${member.emoji}</div>
+                        <div class="member-role">${member.role}</div>
+                        <div class="opinion-badge ${opinionClass}">${opinionSymbol}</div>
+                    </div>
+                    <div class="member-name">${member.name}</div>
+                    <div class="member-status" id="status-${member.id}"></div>
+                `;
+                
+                circle.appendChild(memberDiv);
+            });
+        }
+
+        // Start Timer
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                secondsElapsed++;
+                const minutes = Math.floor(secondsElapsed / 60);
+                const seconds = secondsElapsed % 60;
+                document.getElementById('timerValue').textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        // Start Discussion
+        function startDiscussion() {
+            const messages = document.getElementById('discussionMessages');
+            messages.innerHTML = '';
+            
+            if (currentMode === 'guided') {
+                runGuidedDiscussion();
+            } else {
+                runPracticeDiscussion();
+            }
+        }
+
+        // Guided Discussion
+        function runGuidedDiscussion() {
+            const discussion = currentCase.discussion;
+            
+            function showNextMessage() {
+                if (discussionIndex < discussion.length) {
+                    const msg = discussion[discussionIndex];
+                    const speaker = currentCase.teamMembers.find(m => m.id === msg.speaker);
+                    
+                    // Animate speaker
+                    document.querySelectorAll('.member-avatar').forEach(a => {
+                        a.classList.remove('speaking', 'thinking');
+                    });
+                    document.getElementById(`avatar-${speaker.id}`).classList.add('speaking');
+                    
+                    // Show thinking status
+                    document.getElementById(`status-${speaker.id}`).innerHTML = 
+                        '<div class="thinking-dots"><div class="thinking-dot"></div><div class="thinking-dot"></div><div class="thinking-dot"></div></div>';
+                    
+                    setTimeout(() => {
+                        document.getElementById(`status-${speaker.id}`).innerHTML = '';
+                        addMessage(speaker, msg.message, msg.type);
+                        
+                        // Update consensus
+                        updateConsensus(currentCase.consensusProgress[discussionIndex]);
+                        
+                        // Update votes
+                        updateVotes();
+                        
+                        discussionIndex++;
+                        discussionTimer = setTimeout(showNextMessage, msg.delay || 3000);
+                    }, 1500);
+                } else {
+                    showCaseComplete();
+                }
+            }
+            
+            showNextMessage();
+        }
+
+        // Practice Discussion
+        function runPracticeDiscussion() {
+            const discussion = currentCase.discussion;
+            let practiceIndex = 0;
+            
+            function showNextInteraction() {
+                if (practiceIndex < discussion.length) {
+                    const msg = discussion[practiceIndex];
+                    
+                    // Check if it's player's turn
+                    if (msg.speaker === currentRole && practiceIndex > 3) {
+                        showPlayerOptions();
+                    } else {
+                        const speaker = currentCase.teamMembers.find(m => m.id === msg.speaker);
+                        
+                        // Animate speaker
+                        document.querySelectorAll('.member-avatar').forEach(a => {
+                            a.classList.remove('speaking');
+                        });
+                        document.getElementById(`avatar-${speaker.id}`).classList.add('speaking');
+                        
+                        addMessage(speaker, msg.message, msg.type);
+                        updateConsensus(currentCase.consensusProgress[practiceIndex]);
+                        updateVotes();
+                        
+                        practiceIndex++;
+                        setTimeout(showNextInteraction, 3000);
+                    }
+                } else {
+                    showCaseComplete();
+                }
+            }
+            
+            showNextInteraction();
+        }
+
+        // Show Player Options
+        function showPlayerOptions() {
+            document.getElementById('yourTurn').style.display = 'block';
+            
+            const options = [
+                {
+                    type: 'support',
+                    text: "I agree with the surgical approach. The anatomy is ideal for repair with excellent expected outcomes."
+                },
+                {
+                    type: 'challenge',
+                    text: "Have we fully considered the patient's preferences? Some patients prioritize less invasive options."
+                },
+                {
+                    type: 'question', 
+                    text: "What's the expected success rate for repair given this anatomy? And the risk of residual MR?"
+                },
+                {
+                    type: 'data',
+                    text: "The latest guidelines support early intervention when repair probability exceeds 95% with low surgical risk."
+                }
+            ];
+            
+            const optionsHtml = options.map((opt, i) => `
+                <div class="response-option" onclick="selectResponse(${i})">
+                    <div class="response-type type-${opt.type}">${opt.type}</div>
+                    <div class="response-text">${opt.text}</div>
+                </div>
+            `).join('');
+            
+            document.getElementById('responseOptions').innerHTML = optionsHtml;
+            document.getElementById('submitBtn').disabled = false;
+        }
+
+        function selectResponse(index) {
+            selectedResponse = index;
+            document.querySelectorAll('.response-option').forEach((opt, i) => {
+                opt.classList.toggle('selected', i === index);
+            });
+        }
+
+        function submitResponse() {
+            if (selectedResponse === null) return;
+            
+            const speaker = currentCase.teamMembers.find(m => m.id === currentRole);
+            const option = document.querySelectorAll('.response-option')[selectedResponse];
+            const text = option.querySelector('.response-text').textContent;
+            
+            addMessage(speaker, text, 'neutral');
+            
+            // Reset UI
+            document.getElementById('yourTurn').style.display = 'none';
+            document.getElementById('responseOptions').innerHTML = '';
+            document.getElementById('submitBtn').disabled = true;
+            selectedResponse = null;
+            
+            // Continue discussion
+            setTimeout(() => {
+                // Simulate response from team
+                const responder = currentCase.teamMembers.find(m => m.id !== currentRole);
+                addMessage(responder, "That's an excellent point. Let me address that concern...", 'support');
+            }, 2000);
+        }
+
+        // Add Message
+        function addMessage(speaker, text, type) {
+            const messages = document.getElementById('discussionMessages');
+            
+            const avatarClass = speaker.id === 'surgeon' ? 'surgeon' :
+                               speaker.id === 'interventional' ? 'interventional' :
+                               speaker.id === 'imaging' ? 'imaging' : 'anesthesia';
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message';
+            messageDiv.innerHTML = `
+                <div class="message-avatar ${avatarClass}">${speaker.emoji}</div>
+                <div class="message-content">
+                    <div class="message-header">
+                        <span class="message-sender">${speaker.name}</span>
+                        <span class="message-role">${speaker.role}</span>
+                        <span class="message-time">${getCurrentTime()}</span>
+                    </div>
+                    <div class="message-text ${type}">${text}</div>
+                </div>
+            `;
+            
+            messages.appendChild(messageDiv);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        // Update Consensus
+        function updateConsensus(level) {
+            consensusLevel = level;
+            document.getElementById('consensusPercent').textContent = level + '%';
+            document.getElementById('consensusValue').textContent = level + '%';
+            document.getElementById('consensusFill').style.width = level + '%';
+            document.getElementById('consensusFill').textContent = 
+                level < 30 ? 'Building...' :
+                level < 60 ? 'Discussing...' :
+                level < 85 ? 'Aligning...' : 'Consensus Reached';
+        }
+
+        // Update Votes
+        function updateVotes() {
+            let surgery = 0, transcatheter = 0, medical = 0;
+            
+            currentCase.teamMembers.forEach(member => {
+                if (member.opinion === 'surgery') surgery++;
+                else if (member.opinion === 'transcatheter') transcatheter++;
+                else if (member.opinion === 'medical') medical++;
+            });
+            
+            document.getElementById('voteSurgery').textContent = surgery;
+            document.getElementById('voteTranscatheter').textContent = transcatheter;
+            document.getElementById('voteMedical').textContent = medical;
+        }
+
+        // Show Case Complete
+        function showCaseComplete() {
+            clearInterval(timerInterval);
+            clearTimeout(discussionTimer);
+            
+            setTimeout(() => {
+                document.getElementById('feedbackModal').style.display = 'block';
+                document.getElementById('scoreDisplay').textContent = '92%';
+                document.getElementById('finalDecision').textContent = currentCase.finalDecision;
+                document.getElementById('clinicalRationale').textContent = currentCase.rationale;
+                
+                const pointsHtml = currentCase.learningPoints.map(point => `
+                    <li class="learning-point">
+                        <div class="point-icon">✓</div>
+                        <div class="point-text">${point}</div>
+                    </li>
+                `).join('');
+                document.getElementById('learningPoints').innerHTML = pointsHtml;
+            }, 2000);
+        }
+
+        // Helper Functions
+        function getCurrentTime() {
+            const now = new Date();
+            return now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function reviewCase() {
+            document.getElementById('feedbackModal').style.display = 'none';
+        }
+
+        function nextCase() {
+            document.getElementById('feedbackModal').style.display = 'none';
+            // In real app, would load next case
+            location.reload();
+        }
+    </script>
+</body>
+</html>
