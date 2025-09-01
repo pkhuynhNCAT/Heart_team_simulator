@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Heart Team Simulator - Advanced Mitral Valve Decision Making</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-        
         * {
             margin: 0;
             padding: 0;
@@ -18,18 +16,34 @@
             --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
             --danger-gradient: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
             --info-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #f7971e 0%, #ffd200 100%);
             --dark-gradient: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
             --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
             --card-hover-shadow: 0 30px 80px rgba(0, 0, 0, 0.25);
+            --system-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: var(--system-font);
             background: #0a0e27;
             min-height: 100vh;
             overflow-x: hidden;
             position: relative;
+            font-weight: 400;
         }
+
+        /* Typography Enhancement for System Fonts */
+        h1, h2, h3 {
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .font-light { font-weight: 300; }
+        .font-regular { font-weight: 400; }
+        .font-medium { font-weight: 500; }
+        .font-semibold { font-weight: 600; }
+        .font-bold { font-weight: 700; }
+        .font-extrabold { font-weight: 800; }
 
         /* Animated Background */
         .animated-bg {
@@ -330,7 +344,7 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
             color: white;
-            font-family: 'Monaco', monospace;
+            font-family: 'Monaco', 'Courier New', monospace;
             font-size: 1.1em;
             display: flex;
             align-items: center;
@@ -455,6 +469,16 @@
             color: #667eea;
         }
 
+        .section-expand {
+            cursor: pointer;
+            color: #667eea;
+            transition: transform 0.3s ease;
+        }
+
+        .section-expand:hover {
+            transform: scale(1.2);
+        }
+
         .data-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -467,11 +491,30 @@
             border-radius: 12px;
             padding: 12px;
             transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .data-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+            transition: left 0.5s ease;
         }
 
         .data-item:hover {
             background: rgba(255, 255, 255, 0.05);
             border-color: rgba(102, 126, 234, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .data-item:hover::before {
+            left: 100%;
         }
 
         .data-label {
@@ -505,6 +548,22 @@
             margin-left: 3px;
         }
 
+        .data-trend {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: #8892b0;
+            font-size: 0.8em;
+        }
+
+        .trend-up {
+            color: #ef5350;
+        }
+
+        .trend-down {
+            color: #11998e;
+        }
+
         /* Status Badges */
         .status-badges {
             display: flex;
@@ -518,6 +577,12 @@
             font-size: 0.85em;
             font-weight: 500;
             border: 1px solid;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .status-badge:hover {
+            transform: scale(1.05);
         }
 
         .status-badge.active {
@@ -557,6 +622,36 @@
             color: #8892b0;
         }
 
+        /* Interactive Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .action-btn {
+            padding: 10px 20px;
+            background: rgba(102, 126, 234, 0.2);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 12px;
+            color: #667eea;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .action-btn:hover {
+            background: rgba(102, 126, 234, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .action-btn.active {
+            background: var(--primary-gradient);
+            color: white;
+            border-color: transparent;
+        }
+
         /* Team Circle */
         .team-circle {
             position: relative;
@@ -580,6 +675,13 @@
             align-items: center;
             justify-content: center;
             backdrop-filter: blur(10px);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .circle-center:hover {
+            background: rgba(102, 126, 234, 0.15);
+            transform: translate(-50%, -50%) scale(1.05);
         }
 
         .center-label {
@@ -627,6 +729,11 @@
             overflow: visible;
         }
 
+        .member-avatar:hover {
+            transform: scale(1.1);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
         .member-avatar.speaking {
             animation: speakingPulse 2s ease infinite;
             border-color: #667eea;
@@ -660,6 +767,12 @@
             background: rgba(255, 167, 38, 0.1);
         }
 
+        .member-avatar.selected {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.2);
+            box-shadow: 0 0 30px rgba(102, 126, 234, 0.4);
+        }
+
         .member-emoji {
             font-size: 2.5em;
             margin-bottom: 5px;
@@ -686,6 +799,7 @@
             font-size: 0.8em;
             color: #8892b0;
             text-align: center;
+            margin-top: 5px;
         }
 
         .opinion-badge {
@@ -702,6 +816,7 @@
             color: white;
             font-size: 0.9em;
             border: 2px solid rgba(26, 31, 58, 1);
+            transition: all 0.3s ease;
         }
 
         .opinion-surgery {
@@ -713,11 +828,33 @@
         }
 
         .opinion-medical {
-            background: linear-gradient(135deg, #ffa726 0%, #ff6f00 100%);
+            background: var(--warning-gradient);
         }
 
         .opinion-undecided {
             background: linear-gradient(135deg, #757575 0%, #424242 100%);
+        }
+
+        /* Member Tooltip */
+        .member-tooltip {
+            position: absolute;
+            bottom: -80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+
+        .member-avatar:hover .member-tooltip {
+            opacity: 1;
         }
 
         /* Discussion Area */
@@ -776,6 +913,30 @@
             }
         }
 
+        .discussion-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .control-btn {
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #8892b0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
         /* Messages */
         .message {
             display: flex;
@@ -821,6 +982,14 @@
 
         .message-avatar.anesthesia {
             background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        }
+
+        .message-avatar.heartfailure {
+            background: linear-gradient(135deg, #fc466b 0%, #3f5efb 100%);
+        }
+
+        .message-avatar.coordinator {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
         }
 
         .message-content {
@@ -871,6 +1040,38 @@
             border-left-color: #667eea;
         }
 
+        .message-text.question {
+            border-left-color: #ffa726;
+        }
+
+        .message-reactions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .reaction-btn {
+            padding: 5px 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            color: #8892b0;
+            font-size: 0.85em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .reaction-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.05);
+        }
+
+        .reaction-btn.active {
+            background: rgba(102, 126, 234, 0.2);
+            border-color: rgba(102, 126, 234, 0.3);
+            color: #667eea;
+        }
+
         .message-highlight {
             background: rgba(102, 126, 234, 0.2);
             padding: 12px;
@@ -919,6 +1120,38 @@
             50% {
                 box-shadow: 0 5px 30px rgba(17, 153, 142, 0.5);
             }
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .quick-action {
+            flex: 1;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quick-action:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .quick-action-icon {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+
+        .quick-action-label {
+            color: #8892b0;
+            font-size: 0.85em;
         }
 
         .response-options {
@@ -997,6 +1230,32 @@
         .response-text {
             color: #ccd6f6;
             line-height: 1.6;
+        }
+
+        .response-confidence {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .confidence-label {
+            color: #8892b0;
+            font-size: 0.85em;
+        }
+
+        .confidence-bar {
+            flex: 1;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: var(--primary-gradient);
+            transition: width 0.3s ease;
         }
 
         .submit-btn {
@@ -1101,6 +1360,13 @@
             border-radius: 12px;
             padding: 15px;
             text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .vote-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-3px);
         }
 
         .vote-icon {
@@ -1139,6 +1405,95 @@
         .vote-label {
             color: #8892b0;
             font-size: 0.85em;
+        }
+
+        .vote-members {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .vote-member-mini {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7em;
+        }
+
+        /* Decision Tree Visualization */
+        .decision-tree {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .tree-header {
+            color: white;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tree-nodes {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .tree-node {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            border-left: 3px solid;
+            transition: all 0.3s ease;
+        }
+
+        .tree-node:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateX(5px);
+        }
+
+        .node-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .node-content {
+            flex: 1;
+        }
+
+        .node-title {
+            color: white;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .node-description {
+            color: #8892b0;
+            font-size: 0.9em;
+        }
+
+        .node-value {
+            color: #667eea;
+            font-weight: 600;
+            font-size: 1.1em;
         }
 
         /* Decision Summary Modal */
@@ -1409,6 +1764,10 @@
             .vote-distribution {
                 grid-template-columns: 1fr;
             }
+            
+            .action-buttons {
+                flex-wrap: wrap;
+            }
         }
     </style>
 </head>
@@ -1446,7 +1805,7 @@
                 </div>
             </div>
             
-            <button class="start-button" onclick="startApplication()">Start Simulation</button>
+            <button class="start-button" onclick="startApplication()">Begin Simulation</button>
         </div>
     </div>
 
@@ -1469,7 +1828,7 @@
                     </div>
                     <div class="case-progress">
                         <span class="progress-label">Case</span>
-                        <span class="progress-value" id="caseNumber">1 of 10</span>
+                        <span class="progress-value" id="caseNumber">1 of 5</span>
                     </div>
                 </div>
             </div>
@@ -1478,134 +1837,8 @@
         <!-- Main Container -->
         <div class="app-container">
             <!-- Patient Information Panel -->
-            <div class="patient-panel">
-                <div class="patient-header">
-                    <div class="patient-photo" id="patientPhoto">RJ</div>
-                    <div class="patient-name" id="patientName">Robert Johnson</div>
-                    <div class="patient-meta">
-                        <div class="meta-item">
-                            <span>👤</span>
-                            <span id="patientAge">68 years</span>
-                        </div>
-                        <div class="meta-item">
-                            <span>♂️</span>
-                            <span id="patientGender">Male</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="data-section">
-                    <div class="section-header">
-                        <div class="section-title">
-                            <div class="section-icon">❤️</div>
-                            <span>Hemodynamics</span>
-                        </div>
-                    </div>
-                    <div class="data-grid">
-                        <div class="data-item">
-                            <div class="data-label">Ejection Fraction</div>
-                            <div class="data-value normal" id="dataEF">62<span class="data-unit">%</span></div>
-                        </div>
-                        <div class="data-item">
-                            <div class="data-label">LVEDV</div>
-                            <div class="data-value warning" id="dataLVEDV">185<span class="data-unit">ml</span></div>
-                        </div>
-                        <div class="data-item">
-                            <div class="data-label">LVESV</div>
-                            <div class="data-value normal" id="dataLVESV">70<span class="data-unit">ml</span></div>
-                        </div>
-                        <div class="data-item">
-                            <div class="data-label">LA Volume</div>
-                            <div class="data-value warning" id="dataLA">95<span class="data-unit">ml</span></div>
-                        </div>
-                        <div class="data-item">
-                            <div class="data-label">PAP</div>
-                            <div class="data-value normal" id="dataPAP">38<span class="data-unit">mmHg</span></div>
-                        </div>
-                        <div class="data-item">
-                            <div class="data-label">Cardiac Index</div>
-                            <div class="data-value normal" id="dataCI">3.2<span class="data-unit">L/min/m²</span></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="data-section">
-                    <div class="section-header">
-                        <div class="section-title">
-                            <div class="section-icon">🫀</div>
-                            <span>Valve Assessment</span>
-                        </div>
-                    </div>
-                    <div class="data-grid">
-                        <div class="data-item">
-                            <div class="data-label">MR Severity</div>
-                            <div class="data-value critical" id="dataMR">Severe</div>
-                        </div>
-                        <div class="data-item">
-                            <div class="data-label">Mechanism</div>
-                            <div class="data-value" id="dataMechanism">P2 Prolapse</div>
-                        </div>
-                        <div class="data-item">
-                            <div class="data-label">ERO Area</div>
-                            <div class="data-value critical" id="dataERO">0.45<span class="data-unit">cm²</span></div>
-                        </div>
-                        <div class="data-item">
-                            <div class="data-label">Reg Volume</div>
-                            <div class="data-value critical" id="dataRegVol">65<span class="data-unit">ml</span></div>
-                        </div>
-                        <div class="data-item">
-                            <div class="data-label">TR Severity</div>
-                            <div class="data-value normal" id="dataTR">Mild</div>
-                        </div>
-                        <div class="data-item">
-                            <div class="data-label">Annulus Size</div>
-                            <div class="data-value" id="dataAnnulus">38<span class="data-unit">mm</span></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="data-section">
-                    <div class="section-header">
-                        <div class="section-title">
-                            <div class="section-icon">📊</div>
-                            <span>Risk Assessment</span>
-                        </div>
-                    </div>
-                    <div class="data-grid">
-                        <div class="data-item">
-                            <div class="data-label">STS Score</div>
-                            <div class="data-value normal" id="dataSTS">1.8<span class="data-unit">%</span></div>
-                        </div>
-                        <div class="data-item">
-                            <div class="data-label">EuroSCORE II</div>
-                            <div class="data-value normal" id="dataEuro">2.1<span class="data-unit">%</span></div>
-                        </div>
-                        <div class="data-item">
-                            <div class="data-label">Creatinine</div>
-                            <div class="data-value normal" id="dataCreat">1.1<span class="data-unit">mg/dl</span></div>
-                        </div>
-                        <div class="data-item">
-                            <div class="data-label">Hemoglobin</div>
-                            <div class="data-value normal" id="dataHgb">13.5<span class="data-unit">g/dl</span></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="data-section">
-                    <div class="section-header">
-                        <div class="section-title">
-                            <div class="section-icon">🏥</div>
-                            <span>Clinical Status</span>
-                        </div>
-                    </div>
-                    <div class="status-badges" id="statusBadges">
-                        <div class="status-badge active">NYHA II</div>
-                        <div class="status-badge active">Diabetes</div>
-                        <div class="status-badge inactive">No CAD</div>
-                        <div class="status-badge inactive">No AFib</div>
-                        <div class="status-badge inactive">No COPD</div>
-                    </div>
-                </div>
+            <div class="patient-panel" id="patientPanel">
+                <!-- Patient data will be dynamically loaded -->
             </div>
 
             <!-- Conference Room -->
@@ -1615,22 +1848,35 @@
                     <p class="room-subtitle">Real-time collaborative decision making for optimal patient care</p>
                 </div>
 
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button class="action-btn active" onclick="setView('discussion')">💬 Discussion</button>
+                    <button class="action-btn" onclick="setView('voting')">🗳️ Voting</button>
+                    <button class="action-btn" onclick="setView('evidence')">📚 Evidence</button>
+                    <button class="action-btn" onclick="setView('decision')">🎯 Decision Tree</button>
+                </div>
+
                 <!-- Team Circle Visualization -->
                 <div class="team-circle" id="teamCircle">
-                    <div class="circle-center">
+                    <div class="circle-center" onclick="showConsensusDetails()">
                         <div class="center-label">Consensus Level</div>
                         <div class="center-value" id="consensusPercent">0%</div>
-                        <div class="center-status">Building...</div>
+                        <div class="center-status" id="consensusStatus">Building...</div>
                     </div>
                     <!-- Team members will be dynamically added here -->
                 </div>
 
                 <!-- Discussion Area -->
-                <div class="discussion-area">
+                <div class="discussion-area" id="discussionArea">
                     <div class="discussion-header">
                         <div class="discussion-title">
                             <span>💬</span>
                             <span>Team Discussion</span>
+                        </div>
+                        <div class="discussion-controls">
+                            <button class="control-btn" onclick="pauseDiscussion()" title="Pause">⏸️</button>
+                            <button class="control-btn" onclick="speedUpDiscussion()" title="Speed Up">⏩</button>
+                            <button class="control-btn" onclick="jumpToConflict()" title="Jump to Conflict">⚡</button>
                         </div>
                         <div class="live-indicator">
                             <div class="live-dot"></div>
@@ -1647,6 +1893,26 @@
                     <div class="your-turn" id="yourTurn" style="display: none;">
                         🎯 It's Your Turn to Contribute
                     </div>
+                    
+                    <div class="quick-actions">
+                        <div class="quick-action" onclick="quickAction('agree')">
+                            <div class="quick-action-icon">👍</div>
+                            <div class="quick-action-label">Agree</div>
+                        </div>
+                        <div class="quick-action" onclick="quickAction('disagree')">
+                            <div class="quick-action-icon">👎</div>
+                            <div class="quick-action-label">Disagree</div>
+                        </div>
+                        <div class="quick-action" onclick="quickAction('question')">
+                            <div class="quick-action-icon">❓</div>
+                            <div class="quick-action-label">Question</div>
+                        </div>
+                        <div class="quick-action" onclick="quickAction('data')">
+                            <div class="quick-action-icon">📊</div>
+                            <div class="quick-action-label">Present Data</div>
+                        </div>
+                    </div>
+                    
                     <div class="response-options" id="responseOptions">
                         <!-- Options will be dynamically added -->
                     </div>
@@ -1656,7 +1922,7 @@
                 </div>
 
                 <!-- Consensus Panel -->
-                <div class="consensus-panel">
+                <div class="consensus-panel" id="consensusPanel">
                     <div class="consensus-header">
                         <div class="consensus-title">
                             <span>🤝</span>
@@ -1676,22 +1942,19 @@
                         <span class="consensus-marker">Consensus</span>
                     </div>
                     
-                    <div class="vote-distribution">
-                        <div class="vote-card">
-                            <div class="vote-icon surgery">🔪</div>
-                            <div class="vote-count" id="voteSurgery">0</div>
-                            <div class="vote-label">Surgery</div>
-                        </div>
-                        <div class="vote-card">
-                            <div class="vote-icon transcatheter">🩺</div>
-                            <div class="vote-count" id="voteTranscatheter">0</div>
-                            <div class="vote-label">Transcatheter</div>
-                        </div>
-                        <div class="vote-card">
-                            <div class="vote-icon medical">💊</div>
-                            <div class="vote-count" id="voteMedical">0</div>
-                            <div class="vote-label">Medical</div>
-                        </div>
+                    <div class="vote-distribution" id="voteDistribution">
+                        <!-- Vote cards will be dynamically added -->
+                    </div>
+                </div>
+
+                <!-- Decision Tree (hidden by default) -->
+                <div class="decision-tree" id="decisionTree" style="display: none;">
+                    <div class="tree-header">
+                        <span>🌳</span>
+                        <span>Clinical Decision Pathway</span>
+                    </div>
+                    <div class="tree-nodes" id="treeNodes">
+                        <!-- Decision nodes will be dynamically added -->
                     </div>
                 </div>
             </div>
@@ -1702,9 +1965,9 @@
     <div class="modal" id="feedbackModal">
         <div class="modal-content">
             <div class="modal-header">
-                <div class="modal-icon">✅</div>
-                <h2 class="modal-title">Case Complete!</h2>
-                <p class="modal-subtitle">Let's review the team's decision and key learning points</p>
+                <div class="modal-icon" id="modalIcon">✅</div>
+                <h2 class="modal-title" id="modalTitle">Case Complete!</h2>
+                <p class="modal-subtitle" id="modalSubtitle">Let's review the team's decision and key learning points</p>
                 <div class="score-display" id="scoreDisplay">92%</div>
             </div>
 
@@ -1714,7 +1977,7 @@
                     <span>Final Team Decision</span>
                 </div>
                 <div class="feedback-content" id="finalDecision">
-                    Minimally invasive mitral valve repair with P2 resection and annuloplasty ring placement
+                    <!-- Will be populated dynamically -->
                 </div>
             </div>
 
@@ -1724,7 +1987,7 @@
                     <span>Clinical Rationale</span>
                 </div>
                 <div class="feedback-content" id="clinicalRationale">
-                    The patient presents with severe symptomatic mitral regurgitation due to isolated P2 prolapse. Given the favorable anatomy, preserved left ventricular function, and low surgical risk (STS 1.8%), minimally invasive repair offers the best long-term outcomes with >95% expected repair success rate.
+                    <!-- Will be populated dynamically -->
                 </div>
             </div>
 
@@ -1734,22 +1997,7 @@
                     <span>Key Learning Points</span>
                 </div>
                 <ul class="learning-points" id="learningPoints">
-                    <li class="learning-point">
-                        <div class="point-icon">✓</div>
-                        <div class="point-text">Isolated P2 prolapse has the highest repair success rates (>95%) in experienced centers</div>
-                    </li>
-                    <li class="learning-point">
-                        <div class="point-icon">✓</div>
-                        <div class="point-text">Early intervention preserves LV function and prevents adverse remodeling</div>
-                    </li>
-                    <li class="learning-point">
-                        <div class="point-icon">✓</div>
-                        <div class="point-text">Minimally invasive approaches reduce morbidity while maintaining repair quality</div>
-                    </li>
-                    <li class="learning-point">
-                        <div class="point-icon">✓</div>
-                        <div class="point-text">Multidisciplinary consensus improves patient outcomes</div>
-                    </li>
+                    <!-- Will be populated dynamically -->
                 </ul>
             </div>
 
@@ -1764,6 +2012,8 @@
         // Initialize particles
         function createParticles() {
             const particlesContainer = document.getElementById('particles');
+            if (!particlesContainer) return;
+            
             for (let i = 0; i < 50; i++) {
                 const particle = document.createElement('div');
                 particle.className = 'particle';
@@ -1774,7 +2024,7 @@
             }
         }
 
-        // Comprehensive Clinical Cases Database
+        // Enhanced Clinical Cases Database
         const casesDatabase = [
             {
                 id: 1,
@@ -1787,12 +2037,12 @@
                 },
                 clinicalData: {
                     hemodynamics: {
-                        ef: 62,
-                        lvedv: 185,
-                        lvesv: 70,
-                        la_volume: 95,
-                        pap: 38,
-                        ci: 3.2
+                        ef: { value: 62, trend: 'stable' },
+                        lvedv: { value: 185, trend: 'up' },
+                        lvesv: { value: 70, trend: 'stable' },
+                        la_volume: { value: 95, trend: 'up' },
+                        pap: { value: 38, trend: 'stable' },
+                        ci: { value: 3.2, trend: 'stable' }
                     },
                     valve: {
                         mr_severity: "Severe",
@@ -1800,20 +2050,30 @@
                         ero: 0.45,
                         reg_volume: 65,
                         tr_severity: "Mild",
-                        annulus: 38
+                        annulus: 38,
+                        leaflet_thickness: "Normal",
+                        calcification: "None"
                     },
                     risk: {
                         sts: 1.8,
                         euroscore: 2.1,
                         creatinine: 1.1,
-                        hemoglobin: 13.5
+                        hemoglobin: 13.5,
+                        frailty_index: 0.12
                     },
                     status: {
                         nyha: "II",
                         diabetes: true,
                         cad: false,
                         afib: false,
-                        copd: false
+                        copd: false,
+                        prior_surgery: false
+                    },
+                    imaging: {
+                        echo_quality: "Excellent",
+                        tee_performed: true,
+                        ct_performed: true,
+                        mri_performed: false
                     }
                 },
                 teamMembers: [
@@ -1824,7 +2084,9 @@
                         emoji: "👨‍⚕️",
                         position: { angle: 0 },
                         opinion: "surgery",
-                        personality: "confident"
+                        confidence: 95,
+                        personality: "confident",
+                        experience: "20 years, 500+ mitral repairs"
                     },
                     {
                         id: "interventional",
@@ -1833,7 +2095,9 @@
                         emoji: "👩‍⚕️",
                         position: { angle: 60 },
                         opinion: "undecided",
-                        personality: "analytical"
+                        confidence: 60,
+                        personality: "analytical",
+                        experience: "15 years, 300+ MitraClip procedures"
                     },
                     {
                         id: "imaging",
@@ -1842,7 +2106,9 @@
                         emoji: "👨‍⚕️",
                         position: { angle: 120 },
                         opinion: "surgery",
-                        personality: "detail-oriented"
+                        confidence: 90,
+                        personality: "detail-oriented",
+                        experience: "18 years cardiac imaging"
                     },
                     {
                         id: "anesthesia",
@@ -1851,7 +2117,9 @@
                         emoji: "👩‍⚕️",
                         position: { angle: 180 },
                         opinion: "surgery",
-                        personality: "cautious"
+                        confidence: 85,
+                        personality: "cautious",
+                        experience: "22 years cardiac anesthesia"
                     },
                     {
                         id: "heartfailure",
@@ -1860,7 +2128,9 @@
                         emoji: "👨‍⚕️",
                         position: { angle: 240 },
                         opinion: "surgery",
-                        personality: "evidence-based"
+                        confidence: 88,
+                        personality: "evidence-based",
+                        experience: "16 years heart failure management"
                     },
                     {
                         id: "coordinator",
@@ -1869,7 +2139,9 @@
                         emoji: "👩‍⚕️",
                         position: { angle: 300 },
                         opinion: "undecided",
-                        personality: "patient-focused"
+                        confidence: 70,
+                        personality: "patient-focused",
+                        experience: "12 years cardiac care coordination"
                     }
                 ],
                 discussion: [
@@ -1877,76 +2149,104 @@
                         speaker: "surgeon",
                         message: "Good morning everyone. We're discussing Mr. Johnson, a 68-year-old with severe symptomatic MR. Looking at the echo findings, this appears to be an excellent surgical candidate with isolated P2 prolapse.",
                         type: "neutral",
+                        reactions: [],
                         delay: 2000
                     },
                     {
                         speaker: "imaging",
                         message: "I agree. The 3D TEE shows isolated P2 prolapse with a 7mm flail gap. The leaflet tissue quality is excellent with no calcification. The annulus is moderately dilated at 38mm but should be addressable with an annuloplasty ring.",
                         type: "support",
+                        reactions: ["surgeon:agree"],
                         delay: 3000
                     },
                     {
                         speaker: "anesthesia",
                         message: "From a perioperative risk standpoint, the STS score of 1.8% puts him in the low-risk category. His diabetes is well-controlled with an A1c of 6.8%. No pulmonary or renal issues. He should tolerate surgery well.",
                         type: "support",
+                        reactions: ["surgeon:agree", "imaging:agree"],
                         delay: 3500
                     },
                     {
                         speaker: "interventional",
                         message: "While I agree surgery seems appropriate, should we discuss transcatheter options? The anatomy appears suitable for MitraClip, and some patients prefer to avoid sternotomy. What are the patient's preferences?",
                         type: "challenge",
+                        reactions: ["surgeon:thinking"],
                         delay: 3000
                     },
                     {
                         speaker: "coordinator",
                         message: "The patient did express initial concerns about open surgery. However, after discussing the minimally invasive approach with a small right thoracotomy, he seemed more receptive. His main goal is to return to his active lifestyle - he plays golf three times a week.",
                         type: "neutral",
+                        reactions: [],
                         delay: 3500
                     },
                     {
                         speaker: "surgeon",
                         message: "That's an important point about lifestyle. With this anatomy, I can achieve a >95% repair rate through a mini-thoracotomy. The durability data shows 90% freedom from reoperation at 15 years. MitraClip has higher residual MR rates and less durability data.",
                         type: "support",
+                        reactions: ["imaging:agree", "anesthesia:agree"],
                         delay: 4000
                     },
                     {
                         speaker: "heartfailure",
                         message: "The LV is already showing early remodeling with an LVEDV of 185ml. We need definitive treatment before further deterioration. The guidelines give a Class I recommendation for surgery when repair likelihood is >95% and surgical risk is low.",
                         type: "support",
+                        reactions: ["surgeon:agree", "imaging:agree"],
                         delay: 3500
                     },
                     {
                         speaker: "interventional",
                         message: "Those are compelling arguments. Given the excellent anatomy, low surgical risk, and need for durable repair in this relatively young patient, I agree surgery is the best option. MitraClip should be reserved for higher-risk patients.",
                         type: "support",
+                        reactions: ["surgeon:agree", "heartfailure:agree"],
                         delay: 3000
                     },
                     {
                         speaker: "imaging",
                         message: "I should add that the exercise echo showed his PAP rising to 58mmHg, suggesting hemodynamic consequences despite being relatively asymptomatic. This supports early intervention.",
                         type: "support",
+                        reactions: ["heartfailure:agree", "anesthesia:agree"],
                         delay: 2500
                     },
                     {
                         speaker: "surgeon",
                         message: "Excellent point. So we have consensus for minimally invasive mitral repair? I'll plan for P2 resection with a 32mm annuloplasty ring. Expected pump time around 90 minutes.",
                         type: "neutral",
+                        reactions: ["all:agree"],
                         delay: 3000
-                    },
-                    {
-                        speaker: "anesthesia",
-                        message: "Agreed. I'll prepare for single-lung ventilation and TEE guidance. We'll use our enhanced recovery protocol for early extubation. Any concerns about postop AFib prophylaxis?",
-                        type: "neutral",
-                        delay: 2500
-                    },
-                    {
-                        speaker: "heartfailure",
-                        message: "Good question. Given his normal LA size and no AFib history, standard beta-blockade should suffice. I'll manage his heart failure meds perioperatively.",
-                        type: "support",
-                        delay: 2000
                     }
                 ],
-                consensusProgress: [20, 35, 50, 45, 60, 75, 85, 92, 95, 98, 98, 100],
+                decisionTree: [
+                    {
+                        id: "anatomy",
+                        title: "Anatomical Assessment",
+                        description: "Isolated P2 prolapse with good tissue quality",
+                        value: "Favorable for repair",
+                        borderColor: "#11998e"
+                    },
+                    {
+                        id: "risk",
+                        title: "Surgical Risk",
+                        description: "STS Score 1.8%, no major comorbidities",
+                        value: "Low risk",
+                        borderColor: "#11998e"
+                    },
+                    {
+                        id: "durability",
+                        title: "Expected Durability",
+                        description: ">95% repair success, 90% freedom from reoperation at 15 years",
+                        value: "Excellent",
+                        borderColor: "#667eea"
+                    },
+                    {
+                        id: "patient",
+                        title: "Patient Factors",
+                        description: "Active lifestyle, willing for mini-thoracotomy",
+                        value: "Suitable",
+                        borderColor: "#11998e"
+                    }
+                ],
+                consensusProgress: [0, 20, 35, 50, 45, 60, 75, 85, 92, 95, 98, 100],
                 finalDecision: "Minimally invasive mitral valve repair with P2 resection and annuloplasty",
                 rationale: "For this patient with isolated P2 prolapse, preserved LV function, and low surgical risk (STS 1.8%), minimally invasive mitral repair offers the best long-term outcome with >95% repair success rate and excellent durability.",
                 learningPoints: [
@@ -1958,28 +2258,39 @@
                     "Multidisciplinary consensus improves patient outcomes and satisfaction"
                 ]
             }
+            // Additional cases can be added here
         ];
 
         // Global State
         let currentCase = null;
         let currentMode = 'guided';
         let currentRole = null;
+        let currentView = 'discussion';
         let discussionIndex = 0;
         let discussionTimer = null;
+        let discussionPaused = false;
+        let discussionSpeed = 1;
         let secondsElapsed = 0;
         let timerInterval = null;
         let consensusLevel = 0;
         let selectedResponse = null;
+        let teamVotes = {};
 
         // Start Application
         function startApplication() {
-            document.getElementById('welcomeScreen').style.opacity = '0';
-            setTimeout(() => {
-                document.getElementById('welcomeScreen').style.display = 'none';
-                document.getElementById('mainApp').style.display = 'block';
-                createParticles();
-                showRoleSelection();
-            }, 800);
+            const welcomeScreen = document.getElementById('welcomeScreen');
+            if (welcomeScreen) {
+                welcomeScreen.style.opacity = '0';
+                setTimeout(() => {
+                    welcomeScreen.style.display = 'none';
+                    const mainApp = document.getElementById('mainApp');
+                    if (mainApp) {
+                        mainApp.style.display = 'block';
+                    }
+                    createParticles();
+                    showRoleSelection();
+                }, 800);
+            }
         }
 
         // Role Selection Modal
@@ -2004,18 +2315,30 @@
                             <div class="response-option" onclick="setRole('surgeon')">
                                 <div class="response-type type-support">Surgeon</div>
                                 <div class="response-text">Lead surgical discussions and advocate for operative interventions</div>
+                                <div class="response-confidence">
+                                    <span class="confidence-label">Experience: 20 years</span>
+                                </div>
                             </div>
                             <div class="response-option" onclick="setRole('interventional')">
                                 <div class="response-type type-question">Interventional</div>
                                 <div class="response-text">Champion transcatheter therapies and minimally invasive approaches</div>
+                                <div class="response-confidence">
+                                    <span class="confidence-label">Experience: 15 years</span>
+                                </div>
                             </div>
                             <div class="response-option" onclick="setRole('imaging')">
                                 <div class="response-type type-data">Imaging</div>
                                 <div class="response-text">Provide detailed anatomical assessments and guide procedural planning</div>
+                                <div class="response-confidence">
+                                    <span class="confidence-label">Experience: 18 years</span>
+                                </div>
                             </div>
                             <div class="response-option" onclick="setRole('anesthesia')">
                                 <div class="response-type type-challenge">Anesthesia</div>
                                 <div class="response-text">Assess perioperative risks and optimize patient safety</div>
+                                <div class="response-confidence">
+                                    <span class="confidence-label">Experience: 22 years</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -2054,11 +2377,19 @@
                 return;
             }
             
-            document.querySelector('.modal').remove();
-            document.getElementById('modeBadge').textContent = mode === 'guided' ? 'Guided Learning' : 'Practice Mode';
+            const modal = document.querySelector('.modal');
+            if (modal) modal.remove();
+            
+            const modeBadge = document.getElementById('modeBadge');
+            if (modeBadge) {
+                modeBadge.textContent = mode === 'guided' ? 'Guided Learning' : 'Practice Mode';
+            }
             
             if (mode === 'practice') {
-                document.getElementById('interactionPanel').style.display = 'block';
+                const interactionPanel = document.getElementById('interactionPanel');
+                if (interactionPanel) {
+                    interactionPanel.style.display = 'block';
+                }
             }
             
             loadCase(0);
@@ -2070,12 +2401,19 @@
             discussionIndex = 0;
             consensusLevel = 0;
             secondsElapsed = 0;
+            teamVotes = {};
             
             // Update patient information
             updatePatientPanel();
             
             // Setup team circle
             setupTeamCircle();
+            
+            // Setup vote distribution
+            setupVoteDistribution();
+            
+            // Setup decision tree
+            setupDecisionTree();
             
             // Start timer
             startTimer();
@@ -2086,49 +2424,138 @@
 
         // Update Patient Panel
         function updatePatientPanel() {
+            const panel = document.getElementById('patientPanel');
+            if (!panel || !currentCase) return;
+            
             const patient = currentCase.patient;
             const data = currentCase.clinicalData;
             
-            document.getElementById('patientPhoto').textContent = patient.photo;
-            document.getElementById('patientName').textContent = patient.name;
-            document.getElementById('patientAge').textContent = patient.age + ' years';
-            document.getElementById('patientGender').textContent = patient.gender;
-            
-            // Hemodynamics
-            document.getElementById('dataEF').innerHTML = data.hemodynamics.ef + '<span class="data-unit">%</span>';
-            document.getElementById('dataLVEDV').innerHTML = data.hemodynamics.lvedv + '<span class="data-unit">ml</span>';
-            document.getElementById('dataLVESV').innerHTML = data.hemodynamics.lvesv + '<span class="data-unit">ml</span>';
-            document.getElementById('dataLA').innerHTML = data.hemodynamics.la_volume + '<span class="data-unit">ml</span>';
-            document.getElementById('dataPAP').innerHTML = data.hemodynamics.pap + '<span class="data-unit">mmHg</span>';
-            document.getElementById('dataCI').innerHTML = data.hemodynamics.ci + '<span class="data-unit">L/min/m²</span>';
-            
-            // Valve Assessment  
-            document.getElementById('dataMR').textContent = data.valve.mr_severity;
-            document.getElementById('dataMechanism').textContent = data.valve.mechanism;
-            document.getElementById('dataERO').innerHTML = data.valve.ero + '<span class="data-unit">cm²</span>';
-            document.getElementById('dataRegVol').innerHTML = data.valve.reg_volume + '<span class="data-unit">ml</span>';
-            document.getElementById('dataTR').textContent = data.valve.tr_severity;
-            document.getElementById('dataAnnulus').innerHTML = data.valve.annulus + '<span class="data-unit">mm</span>';
-            
-            // Risk Assessment
-            document.getElementById('dataSTS').innerHTML = data.risk.sts + '<span class="data-unit">%</span>';
-            document.getElementById('dataEuro').innerHTML = data.risk.euroscore + '<span class="data-unit">%</span>';
-            document.getElementById('dataCreat').innerHTML = data.risk.creatinine + '<span class="data-unit">mg/dl</span>';
-            document.getElementById('dataHgb').innerHTML = data.risk.hemoglobin + '<span class="data-unit">g/dl</span>';
-            
-            // Clinical Status
-            const badges = [];
-            badges.push(`<div class="status-badge active">NYHA ${data.status.nyha}</div>`);
-            if (data.status.diabetes) badges.push('<div class="status-badge active">Diabetes</div>');
-            if (!data.status.cad) badges.push('<div class="status-badge inactive">No CAD</div>');
-            if (!data.status.afib) badges.push('<div class="status-badge inactive">No AFib</div>');
-            if (!data.status.copd) badges.push('<div class="status-badge inactive">No COPD</div>');
-            document.getElementById('statusBadges').innerHTML = badges.join('');
+            panel.innerHTML = `
+                <div class="patient-header">
+                    <div class="patient-photo">${patient.photo}</div>
+                    <div class="patient-name">${patient.name}</div>
+                    <div class="patient-meta">
+                        <div class="meta-item">
+                            <span>👤</span>
+                            <span>${patient.age} years</span>
+                        </div>
+                        <div class="meta-item">
+                            <span>♂️</span>
+                            <span>${patient.gender}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="data-section">
+                    <div class="section-header">
+                        <div class="section-title">
+                            <div class="section-icon">❤️</div>
+                            <span>Hemodynamics</span>
+                        </div>
+                        <span class="section-expand" onclick="expandSection('hemodynamics')">⤵️</span>
+                    </div>
+                    <div class="data-grid">
+                        <div class="data-item" onclick="showDataDetails('ef')">
+                            <div class="data-label">Ejection Fraction</div>
+                            <div class="data-value ${data.hemodynamics.ef.value >= 50 ? 'normal' : 'warning'}">${data.hemodynamics.ef.value}<span class="data-unit">%</span></div>
+                            <div class="data-trend ${data.hemodynamics.ef.trend === 'up' ? 'trend-up' : data.hemodynamics.ef.trend === 'down' ? 'trend-down' : ''}">
+                                ${data.hemodynamics.ef.trend === 'up' ? '↑' : data.hemodynamics.ef.trend === 'down' ? '↓' : '→'}
+                            </div>
+                        </div>
+                        <div class="data-item" onclick="showDataDetails('lvedv')">
+                            <div class="data-label">LVEDV</div>
+                            <div class="data-value ${data.hemodynamics.lvedv.value > 170 ? 'warning' : 'normal'}">${data.hemodynamics.lvedv.value}<span class="data-unit">ml</span></div>
+                            <div class="data-trend ${data.hemodynamics.lvedv.trend === 'up' ? 'trend-up' : ''}">
+                                ${data.hemodynamics.lvedv.trend === 'up' ? '↑' : '→'}
+                            </div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">LVESV</div>
+                            <div class="data-value normal">${data.hemodynamics.lvesv.value}<span class="data-unit">ml</span></div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">LA Volume</div>
+                            <div class="data-value ${data.hemodynamics.la_volume.value > 90 ? 'warning' : 'normal'}">${data.hemodynamics.la_volume.value}<span class="data-unit">ml</span></div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">PAP</div>
+                            <div class="data-value ${data.hemodynamics.pap.value > 35 ? 'warning' : 'normal'}">${data.hemodynamics.pap.value}<span class="data-unit">mmHg</span></div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">Cardiac Index</div>
+                            <div class="data-value normal">${data.hemodynamics.ci.value}<span class="data-unit">L/min/m²</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="data-section">
+                    <div class="section-header">
+                        <div class="section-title">
+                            <div class="section-icon">🫀</div>
+                            <span>Valve Assessment</span>
+                        </div>
+                    </div>
+                    <div class="data-grid">
+                        <div class="data-item">
+                            <div class="data-label">MR Severity</div>
+                            <div class="data-value critical">${data.valve.mr_severity}</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">Mechanism</div>
+                            <div class="data-value">${data.valve.mechanism}</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">ERO Area</div>
+                            <div class="data-value critical">${data.valve.ero}<span class="data-unit">cm²</span></div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">Reg Volume</div>
+                            <div class="data-value critical">${data.valve.reg_volume}<span class="data-unit">ml</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="data-section">
+                    <div class="section-header">
+                        <div class="section-title">
+                            <div class="section-icon">📊</div>
+                            <span>Risk Assessment</span>
+                        </div>
+                    </div>
+                    <div class="data-grid">
+                        <div class="data-item">
+                            <div class="data-label">STS Score</div>
+                            <div class="data-value ${data.risk.sts < 4 ? 'normal' : data.risk.sts < 8 ? 'warning' : 'critical'}">${data.risk.sts}<span class="data-unit">%</span></div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">EuroSCORE II</div>
+                            <div class="data-value ${data.risk.euroscore < 4 ? 'normal' : 'warning'}">${data.risk.euroscore}<span class="data-unit">%</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="data-section">
+                    <div class="section-header">
+                        <div class="section-title">
+                            <div class="section-icon">🏥</div>
+                            <span>Clinical Status</span>
+                        </div>
+                    </div>
+                    <div class="status-badges">
+                        <div class="status-badge active">NYHA ${data.status.nyha}</div>
+                        ${data.status.diabetes ? '<div class="status-badge active">Diabetes</div>' : ''}
+                        ${!data.status.cad ? '<div class="status-badge inactive">No CAD</div>' : ''}
+                        ${!data.status.afib ? '<div class="status-badge inactive">No AFib</div>' : ''}
+                    </div>
+                </div>
+            `;
         }
 
         // Setup Team Circle
         function setupTeamCircle() {
             const circle = document.getElementById('teamCircle');
+            if (!circle || !currentCase) return;
+            
             const centerX = circle.offsetWidth / 2;
             const centerY = 225;
             const radius = 180;
@@ -2153,16 +2580,73 @@
                                      member.opinion === 'medical' ? 'M' : '?';
                 
                 memberDiv.innerHTML = `
-                    <div class="member-avatar ${member.id === currentRole ? 'selected' : ''}" id="avatar-${member.id}">
+                    <div class="member-avatar ${member.id === currentRole ? 'selected' : ''}" id="avatar-${member.id}" onclick="showMemberDetails('${member.id}')">
                         <div class="member-emoji">${member.emoji}</div>
                         <div class="member-role">${member.role}</div>
-                        <div class="opinion-badge ${opinionClass}">${opinionSymbol}</div>
+                        <div class="opinion-badge ${opinionClass}" id="opinion-${member.id}">${opinionSymbol}</div>
+                        <div class="member-tooltip">${member.experience}</div>
                     </div>
                     <div class="member-name">${member.name}</div>
                     <div class="member-status" id="status-${member.id}"></div>
                 `;
                 
                 circle.appendChild(memberDiv);
+                
+                // Initialize team votes
+                teamVotes[member.id] = member.opinion;
+            });
+        }
+
+        // Setup Vote Distribution
+        function setupVoteDistribution() {
+            const voteDistribution = document.getElementById('voteDistribution');
+            if (!voteDistribution) return;
+            
+            voteDistribution.innerHTML = `
+                <div class="vote-card" onclick="showVoteDetails('surgery')">
+                    <div class="vote-icon surgery">🔪</div>
+                    <div class="vote-count" id="voteSurgery">0</div>
+                    <div class="vote-label">Surgery</div>
+                    <div class="vote-members" id="voteMembersSurgery"></div>
+                </div>
+                <div class="vote-card" onclick="showVoteDetails('transcatheter')">
+                    <div class="vote-icon transcatheter">🩺</div>
+                    <div class="vote-count" id="voteTranscatheter">0</div>
+                    <div class="vote-label">Transcatheter</div>
+                    <div class="vote-members" id="voteMembersTranscatheter"></div>
+                </div>
+                <div class="vote-card" onclick="showVoteDetails('medical')">
+                    <div class="vote-icon medical">💊</div>
+                    <div class="vote-count" id="voteMedical">0</div>
+                    <div class="vote-label">Medical</div>
+                    <div class="vote-members" id="voteMembersMedical"></div>
+                </div>
+            `;
+            
+            updateVotes();
+        }
+
+        // Setup Decision Tree
+        function setupDecisionTree() {
+            const treeNodes = document.getElementById('treeNodes');
+            if (!treeNodes || !currentCase) return;
+            
+            treeNodes.innerHTML = '';
+            currentCase.decisionTree.forEach(node => {
+                const nodeDiv = document.createElement('div');
+                nodeDiv.className = 'tree-node';
+                nodeDiv.style.borderLeftColor = node.borderColor;
+                nodeDiv.innerHTML = `
+                    <div class="node-icon" style="background: ${node.borderColor}20; color: ${node.borderColor};">
+                        ${node.id === 'anatomy' ? '🫀' : node.id === 'risk' ? '📊' : node.id === 'durability' ? '⏱️' : '👤'}
+                    </div>
+                    <div class="node-content">
+                        <div class="node-title">${node.title}</div>
+                        <div class="node-description">${node.description}</div>
+                    </div>
+                    <div class="node-value">${node.value}</div>
+                `;
+                treeNodes.appendChild(nodeDiv);
             });
         }
 
@@ -2172,15 +2656,20 @@
                 secondsElapsed++;
                 const minutes = Math.floor(secondsElapsed / 60);
                 const seconds = secondsElapsed % 60;
-                document.getElementById('timerValue').textContent = 
-                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                const timerValue = document.getElementById('timerValue');
+                if (timerValue) {
+                    timerValue.textContent = 
+                        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                }
             }, 1000);
         }
 
         // Start Discussion
         function startDiscussion() {
             const messages = document.getElementById('discussionMessages');
-            messages.innerHTML = '';
+            if (messages) {
+                messages.innerHTML = '';
+            }
             
             if (currentMode === 'guided') {
                 runGuidedDiscussion();
@@ -2191,36 +2680,60 @@
 
         // Guided Discussion
         function runGuidedDiscussion() {
+            if (!currentCase) return;
+            
             const discussion = currentCase.discussion;
             
             function showNextMessage() {
+                if (discussionPaused) {
+                    discussionTimer = setTimeout(showNextMessage, 500);
+                    return;
+                }
+                
                 if (discussionIndex < discussion.length) {
                     const msg = discussion[discussionIndex];
                     const speaker = currentCase.teamMembers.find(m => m.id === msg.speaker);
+                    
+                    if (!speaker) {
+                        discussionIndex++;
+                        showNextMessage();
+                        return;
+                    }
                     
                     // Animate speaker
                     document.querySelectorAll('.member-avatar').forEach(a => {
                         a.classList.remove('speaking', 'thinking');
                     });
-                    document.getElementById(`avatar-${speaker.id}`).classList.add('speaking');
+                    const avatar = document.getElementById(`avatar-${speaker.id}`);
+                    if (avatar) {
+                        avatar.classList.add('speaking');
+                    }
                     
                     // Show thinking status
-                    document.getElementById(`status-${speaker.id}`).innerHTML = 
-                        '<div class="thinking-dots"><div class="thinking-dot"></div><div class="thinking-dot"></div><div class="thinking-dot"></div></div>';
+                    const status = document.getElementById(`status-${speaker.id}`);
+                    if (status) {
+                        status.innerHTML = 
+                            '<div class="thinking-dots"><div class="thinking-dot"></div><div class="thinking-dot"></div><div class="thinking-dot"></div></div>';
+                    }
                     
                     setTimeout(() => {
-                        document.getElementById(`status-${speaker.id}`).innerHTML = '';
-                        addMessage(speaker, msg.message, msg.type);
+                        if (status) {
+                            status.innerHTML = '';
+                        }
+                        addMessage(speaker, msg.message, msg.type, msg.reactions);
                         
                         // Update consensus
-                        updateConsensus(currentCase.consensusProgress[discussionIndex]);
+                        if (currentCase.consensusProgress[discussionIndex]) {
+                            updateConsensus(currentCase.consensusProgress[discussionIndex]);
+                        }
                         
-                        // Update votes
+                        // Update votes based on reactions
+                        processReactions(msg.reactions);
                         updateVotes();
                         
                         discussionIndex++;
-                        discussionTimer = setTimeout(showNextMessage, msg.delay || 3000);
-                    }, 1500);
+                        discussionTimer = setTimeout(showNextMessage, (msg.delay || 3000) / discussionSpeed);
+                    }, 1500 / discussionSpeed);
                 } else {
                     showCaseComplete();
                 }
@@ -2229,113 +2742,12 @@
             showNextMessage();
         }
 
-        // Practice Discussion
-        function runPracticeDiscussion() {
-            const discussion = currentCase.discussion;
-            let practiceIndex = 0;
-            
-            function showNextInteraction() {
-                if (practiceIndex < discussion.length) {
-                    const msg = discussion[practiceIndex];
-                    
-                    // Check if it's player's turn
-                    if (msg.speaker === currentRole && practiceIndex > 3) {
-                        showPlayerOptions();
-                    } else {
-                        const speaker = currentCase.teamMembers.find(m => m.id === msg.speaker);
-                        
-                        // Animate speaker
-                        document.querySelectorAll('.member-avatar').forEach(a => {
-                            a.classList.remove('speaking');
-                        });
-                        document.getElementById(`avatar-${speaker.id}`).classList.add('speaking');
-                        
-                        addMessage(speaker, msg.message, msg.type);
-                        updateConsensus(currentCase.consensusProgress[practiceIndex]);
-                        updateVotes();
-                        
-                        practiceIndex++;
-                        setTimeout(showNextInteraction, 3000);
-                    }
-                } else {
-                    showCaseComplete();
-                }
-            }
-            
-            showNextInteraction();
-        }
-
-        // Show Player Options
-        function showPlayerOptions() {
-            document.getElementById('yourTurn').style.display = 'block';
-            
-            const options = [
-                {
-                    type: 'support',
-                    text: "I agree with the surgical approach. The anatomy is ideal for repair with excellent expected outcomes."
-                },
-                {
-                    type: 'challenge',
-                    text: "Have we fully considered the patient's preferences? Some patients prioritize less invasive options."
-                },
-                {
-                    type: 'question', 
-                    text: "What's the expected success rate for repair given this anatomy? And the risk of residual MR?"
-                },
-                {
-                    type: 'data',
-                    text: "The latest guidelines support early intervention when repair probability exceeds 95% with low surgical risk."
-                }
-            ];
-            
-            const optionsHtml = options.map((opt, i) => `
-                <div class="response-option" onclick="selectResponse(${i})">
-                    <div class="response-type type-${opt.type}">${opt.type}</div>
-                    <div class="response-text">${opt.text}</div>
-                </div>
-            `).join('');
-            
-            document.getElementById('responseOptions').innerHTML = optionsHtml;
-            document.getElementById('submitBtn').disabled = false;
-        }
-
-        function selectResponse(index) {
-            selectedResponse = index;
-            document.querySelectorAll('.response-option').forEach((opt, i) => {
-                opt.classList.toggle('selected', i === index);
-            });
-        }
-
-        function submitResponse() {
-            if (selectedResponse === null) return;
-            
-            const speaker = currentCase.teamMembers.find(m => m.id === currentRole);
-            const option = document.querySelectorAll('.response-option')[selectedResponse];
-            const text = option.querySelector('.response-text').textContent;
-            
-            addMessage(speaker, text, 'neutral');
-            
-            // Reset UI
-            document.getElementById('yourTurn').style.display = 'none';
-            document.getElementById('responseOptions').innerHTML = '';
-            document.getElementById('submitBtn').disabled = true;
-            selectedResponse = null;
-            
-            // Continue discussion
-            setTimeout(() => {
-                // Simulate response from team
-                const responder = currentCase.teamMembers.find(m => m.id !== currentRole);
-                addMessage(responder, "That's an excellent point. Let me address that concern...", 'support');
-            }, 2000);
-        }
-
         // Add Message
-        function addMessage(speaker, text, type) {
+        function addMessage(speaker, text, type, reactions) {
             const messages = document.getElementById('discussionMessages');
+            if (!messages) return;
             
-            const avatarClass = speaker.id === 'surgeon' ? 'surgeon' :
-                               speaker.id === 'interventional' ? 'interventional' :
-                               speaker.id === 'imaging' ? 'imaging' : 'anesthesia';
+            const avatarClass = speaker.id;
             
             const messageDiv = document.createElement('div');
             messageDiv.className = 'message';
@@ -2348,6 +2760,11 @@
                         <span class="message-time">${getCurrentTime()}</span>
                     </div>
                     <div class="message-text ${type}">${text}</div>
+                    <div class="message-reactions">
+                        <button class="reaction-btn" onclick="reactToMessage(this, 'agree')">👍 Agree</button>
+                        <button class="reaction-btn" onclick="reactToMessage(this, 'disagree')">👎 Disagree</button>
+                        <button class="reaction-btn" onclick="reactToMessage(this, 'question')">❓ Question</button>
+                    </div>
                 </div>
             `;
             
@@ -2355,31 +2772,140 @@
             messages.scrollTop = messages.scrollHeight;
         }
 
+        // Process Reactions
+        function processReactions(reactions) {
+            if (!reactions || !currentCase) return;
+            
+            reactions.forEach(reaction => {
+                const [memberId, reactionType] = reaction.split(':');
+                
+                if (memberId === 'all') {
+                    currentCase.teamMembers.forEach(member => {
+                        updateMemberState(member.id, reactionType);
+                    });
+                } else {
+                    updateMemberState(memberId, reactionType);
+                }
+            });
+        }
+
+        // Update Member State
+        function updateMemberState(memberId, state) {
+            const avatar = document.getElementById(`avatar-${memberId}`);
+            if (!avatar) return;
+            
+            avatar.classList.remove('agrees', 'disagrees', 'thinking');
+            
+            if (state === 'agree') {
+                avatar.classList.add('agrees');
+            } else if (state === 'disagree') {
+                avatar.classList.add('disagrees');
+            } else if (state === 'thinking') {
+                avatar.classList.add('thinking');
+            }
+            
+            // Update vote if agreeing
+            if (state === 'agree' && currentCase) {
+                const currentSpeaker = currentCase.discussion[discussionIndex - 1]?.speaker;
+                if (currentSpeaker) {
+                    const speakerMember = currentCase.teamMembers.find(m => m.id === currentSpeaker);
+                    if (speakerMember && speakerMember.opinion !== 'undecided') {
+                        teamVotes[memberId] = speakerMember.opinion;
+                        updateOpinionBadge(memberId, speakerMember.opinion);
+                    }
+                }
+            }
+        }
+
+        // Update Opinion Badge
+        function updateOpinionBadge(memberId, opinion) {
+            const badge = document.getElementById(`opinion-${memberId}`);
+            if (!badge) return;
+            
+            badge.className = `opinion-badge opinion-${opinion}`;
+            badge.textContent = opinion === 'surgery' ? 'S' :
+                               opinion === 'transcatheter' ? 'T' :
+                               opinion === 'medical' ? 'M' : '?';
+        }
+
         // Update Consensus
         function updateConsensus(level) {
             consensusLevel = level;
-            document.getElementById('consensusPercent').textContent = level + '%';
-            document.getElementById('consensusValue').textContent = level + '%';
-            document.getElementById('consensusFill').style.width = level + '%';
-            document.getElementById('consensusFill').textContent = 
-                level < 30 ? 'Building...' :
-                level < 60 ? 'Discussing...' :
-                level < 85 ? 'Aligning...' : 'Consensus Reached';
+            
+            const elements = {
+                percent: document.getElementById('consensusPercent'),
+                value: document.getElementById('consensusValue'),
+                fill: document.getElementById('consensusFill'),
+                status: document.getElementById('consensusStatus')
+            };
+            
+            if (elements.percent) elements.percent.textContent = level + '%';
+            if (elements.value) elements.value.textContent = level + '%';
+            if (elements.fill) {
+                elements.fill.style.width = level + '%';
+                elements.fill.textContent = 
+                    level < 30 ? 'Building...' :
+                    level < 60 ? 'Discussing...' :
+                    level < 85 ? 'Aligning...' : 'Consensus Reached';
+            }
+            if (elements.status) {
+                elements.status.textContent = 
+                    level < 30 ? 'Disagreement' :
+                    level < 60 ? 'Active Discussion' :
+                    level < 85 ? 'Building Agreement' : 'Consensus Achieved';
+            }
         }
 
         // Update Votes
         function updateVotes() {
             let surgery = 0, transcatheter = 0, medical = 0;
+            const surgeryMembers = [], transcatheterMembers = [], medicalMembers = [];
             
-            currentCase.teamMembers.forEach(member => {
-                if (member.opinion === 'surgery') surgery++;
-                else if (member.opinion === 'transcatheter') transcatheter++;
-                else if (member.opinion === 'medical') medical++;
+            Object.entries(teamVotes).forEach(([memberId, vote]) => {
+                const member = currentCase?.teamMembers.find(m => m.id === memberId);
+                if (!member) return;
+                
+                if (vote === 'surgery') {
+                    surgery++;
+                    surgeryMembers.push(member.emoji);
+                } else if (vote === 'transcatheter') {
+                    transcatheter++;
+                    transcatheterMembers.push(member.emoji);
+                } else if (vote === 'medical') {
+                    medical++;
+                    medicalMembers.push(member.emoji);
+                }
             });
             
-            document.getElementById('voteSurgery').textContent = surgery;
-            document.getElementById('voteTranscatheter').textContent = transcatheter;
-            document.getElementById('voteMedical').textContent = medical;
+            // Update counts
+            const voteSurgery = document.getElementById('voteSurgery');
+            const voteTranscatheter = document.getElementById('voteTranscatheter');
+            const voteMedical = document.getElementById('voteMedical');
+            
+            if (voteSurgery) voteSurgery.textContent = surgery;
+            if (voteTranscatheter) voteTranscatheter.textContent = transcatheter;
+            if (voteMedical) voteMedical.textContent = medical;
+            
+            // Update member icons
+            const voteMembersSurgery = document.getElementById('voteMembersSurgery');
+            const voteMembersTranscatheter = document.getElementById('voteMembersTranscatheter');
+            const voteMembersMedical = document.getElementById('voteMembersMedical');
+            
+            if (voteMembersSurgery) {
+                voteMembersSurgery.innerHTML = surgeryMembers.map(e => 
+                    `<div class="vote-member-mini">${e}</div>`
+                ).join('');
+            }
+            if (voteMembersTranscatheter) {
+                voteMembersTranscatheter.innerHTML = transcatheterMembers.map(e => 
+                    `<div class="vote-member-mini">${e}</div>`
+                ).join('');
+            }
+            if (voteMembersMedical) {
+                voteMembersMedical.innerHTML = medicalMembers.map(e => 
+                    `<div class="vote-member-mini">${e}</div>`
+                ).join('');
+            }
         }
 
         // Show Case Complete
@@ -2388,19 +2914,162 @@
             clearTimeout(discussionTimer);
             
             setTimeout(() => {
-                document.getElementById('feedbackModal').style.display = 'block';
-                document.getElementById('scoreDisplay').textContent = '92%';
-                document.getElementById('finalDecision').textContent = currentCase.finalDecision;
-                document.getElementById('clinicalRationale').textContent = currentCase.rationale;
+                const modal = document.getElementById('feedbackModal');
+                if (!modal || !currentCase) return;
                 
-                const pointsHtml = currentCase.learningPoints.map(point => `
-                    <li class="learning-point">
-                        <div class="point-icon">✓</div>
-                        <div class="point-text">${point}</div>
-                    </li>
-                `).join('');
-                document.getElementById('learningPoints').innerHTML = pointsHtml;
+                modal.style.display = 'block';
+                
+                // Update modal content
+                const scoreDisplay = document.getElementById('scoreDisplay');
+                const finalDecision = document.getElementById('finalDecision');
+                const clinicalRationale = document.getElementById('clinicalRationale');
+                const learningPoints = document.getElementById('learningPoints');
+                
+                if (scoreDisplay) scoreDisplay.textContent = '92%';
+                if (finalDecision) finalDecision.textContent = currentCase.finalDecision;
+                if (clinicalRationale) clinicalRationale.textContent = currentCase.rationale;
+                
+                if (learningPoints) {
+                    const pointsHtml = currentCase.learningPoints.map(point => `
+                        <li class="learning-point">
+                            <div class="point-icon">✓</div>
+                            <div class="point-text">${point}</div>
+                        </li>
+                    `).join('');
+                    learningPoints.innerHTML = pointsHtml;
+                }
             }, 2000);
+        }
+
+        // Interactive Functions
+        function setView(view) {
+            currentView = view;
+            
+            // Update button states
+            document.querySelectorAll('.action-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Show/hide panels
+            const discussionArea = document.getElementById('discussionArea');
+            const consensusPanel = document.getElementById('consensusPanel');
+            const decisionTree = document.getElementById('decisionTree');
+            
+            if (discussionArea) discussionArea.style.display = view === 'discussion' ? 'block' : 'none';
+            if (consensusPanel) consensusPanel.style.display = view === 'voting' ? 'block' : 'none';
+            if (decisionTree) decisionTree.style.display = view === 'decision' ? 'block' : 'none';
+            
+            if (view === 'evidence') {
+                showEvidenceModal();
+            }
+        }
+
+        function pauseDiscussion() {
+            discussionPaused = !discussionPaused;
+            const btn = event.target;
+            btn.textContent = discussionPaused ? '▶️' : '⏸️';
+        }
+
+        function speedUpDiscussion() {
+            discussionSpeed = discussionSpeed === 1 ? 2 : discussionSpeed === 2 ? 3 : 1;
+            const btn = event.target;
+            btn.textContent = discussionSpeed === 1 ? '⏩' : discussionSpeed === 2 ? '⏩⏩' : '⏩⏩⏩';
+        }
+
+        function jumpToConflict() {
+            // Jump to first challenge/conflict in discussion
+            if (!currentCase) return;
+            
+            const conflictIndex = currentCase.discussion.findIndex(msg => msg.type === 'challenge');
+            if (conflictIndex !== -1 && conflictIndex > discussionIndex) {
+                discussionIndex = conflictIndex - 1;
+            }
+        }
+
+        function quickAction(action) {
+            console.log('Quick action:', action);
+            // Implement quick action responses
+        }
+
+        function reactToMessage(btn, reaction) {
+            btn.classList.toggle('active');
+            // Implement message reactions
+        }
+
+        function showMemberDetails(memberId) {
+            const member = currentCase?.teamMembers.find(m => m.id === memberId);
+            if (!member) return;
+            
+            console.log('Member details:', member);
+            // Could show a modal with detailed member information
+        }
+
+        function showVoteDetails(voteType) {
+            console.log('Vote details:', voteType);
+            // Could show detailed breakdown of votes
+        }
+
+        function showConsensusDetails() {
+            console.log('Consensus details');
+            // Could show detailed consensus breakdown
+        }
+
+        function showDataDetails(dataType) {
+            console.log('Data details:', dataType);
+            // Could show trending data or detailed explanations
+        }
+
+        function expandSection(section) {
+            console.log('Expand section:', section);
+            // Could expand/collapse sections
+        }
+
+        function showEvidenceModal() {
+            // Create evidence modal
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.display = 'block';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div class="modal-icon">📚</div>
+                        <h2 class="modal-title">Clinical Evidence</h2>
+                        <p class="modal-subtitle">Guidelines and supporting literature</p>
+                    </div>
+                    
+                    <div class="feedback-section">
+                        <div class="feedback-title">
+                            <span>📖</span>
+                            <span>Current Guidelines</span>
+                        </div>
+                        <div class="feedback-content">
+                            <strong>2020 ACC/AHA Guidelines for Valvular Heart Disease:</strong><br>
+                            Class I recommendation for mitral valve surgery when:<br>
+                            • Symptomatic severe primary MR<br>
+                            • Asymptomatic severe MR with LVEF ≤60% or LVESD ≥40mm<br>
+                            • Repair success likelihood >95% with expected mortality <1%
+                        </div>
+                    </div>
+                    
+                    <div class="feedback-section">
+                        <div class="feedback-title">
+                            <span>📊</span>
+                            <span>Key Studies</span>
+                        </div>
+                        <div class="feedback-content">
+                            • <strong>COAPT Trial:</strong> MitraClip in functional MR with HF<br>
+                            • <strong>MITRA-FR:</strong> Different patient selection criteria<br>
+                            • <strong>Surgical series:</strong> >95% repair rate for isolated P2 prolapse
+                        </div>
+                    </div>
+                    
+                    <div class="modal-actions">
+                        <button class="modal-btn primary" onclick="this.closest('.modal').remove()">Close</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
         }
 
         // Helper Functions
@@ -2410,13 +3079,20 @@
         }
 
         function reviewCase() {
-            document.getElementById('feedbackModal').style.display = 'none';
+            const modal = document.getElementById('feedbackModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
         }
 
         function nextCase() {
-            document.getElementById('feedbackModal').style.display = 'none';
+            const modal = document.getElementById('feedbackModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
             // In real app, would load next case
-            location.reload();
+            // For now, reload the same case
+            loadCase(0);
         }
     </script>
 </body>
